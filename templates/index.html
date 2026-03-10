@@ -15,57 +15,86 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
+
 <body>
-  <section class="about-reveal">
-  
+<section class="hero">
 
-    <section class="hero">
+  <div class="hero-top">
+    <p class="welcome">BIENVENIDA A</p>
+  </div>
 
-    <div class="hero-top">
-      <p class="welcome">BIENVENIDA A</p>
+  <div class="hero-center">
+    <h1>SERENA NAILS</h1>
+  </div>
+
+  <div class="hero-buttons">
+    <a href="#" class="btn-primary">Reservar Turno</a>
+    <a href="https://wa.me/+598097700366" target="_blank" class="whatsapp-circle">
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+  </div>
+
+</section>
+
+
+<section class="about">
+
+  <!-- NOMBRE -->
+  <div class="about-name-block reveal">
+    <h2 class="name-first reveal">Sheila</h2>
+    <h2 class="name-last reveal">Navcevich</h2>
+  </div>
+
+  <!-- FOTO -->
+  <div class="about-photo-block reveal">
+    <img src="/static/presentation1.jpg" alt="Sheila Navcevich">
+  </div>
+
+  <!-- TEXTO -->
+  <div class="about-text-block reveal">
+    <p>
+      Soy técnica en uñas certificada y me apasiona crear diseños elegantes
+      y duraderos que resalten tu estilo personal.
+
+      Me especializo en manicura clásica, soft gel y nail art personalizado.
+      Mi objetivo es que cada clienta viva una experiencia cómoda,
+      profesional y hermosa.
+    </p>
+  </div>
+
+</section>
+
+<section class="services">
+
+  <h2 class="services-title">Servicios</h2>
+
+  <div class="services-grid">
+
+    <div class="service-card reveal">
+      <h3>Kapping Gel</h3>
+      <p>Refuerzo sobre tu uña natural para mayor durabilidad y resistencia.</p>
     </div>
 
-    <div class="hero-center">
-      <h1>SERENA NAILS</h1>
+    <div class="service-card reveal">
+      <h3>Soft Gel</h3>
+      <p>Extensiones ligeras y elegantes con acabado natural.</p>
     </div>
 
-    <div class="hero-buttons">
-      <a href="#" class="btn-primary">Reservar Turno</a>
-      <a href="https://wa.me/+598097700366" target="_blank" class="whatsapp-circle">
-    <i class="fa-brands fa-whatsapp"></i>
-  </a>
-    </div>
-  </section>
-
-  <section class="about">
-
-    <!-- NOMBRE -->
-    <div class="about-name-block">
-      <h2 class="name-first">Sheila</h2>
-      <h2 class="name-last">Navcevich</h2>
+    <div class="service-card reveal">
+      <h3>Semipermanente</h3>
+      <p>Esmaltado duradero con brillo perfecto por semanas.</p>
     </div>
 
-    <!-- FOTO -->
-    <div class="about-photo-block">
-      <img src="/static/presentation1.jpg" alt="Sheila Navcevich">
+    <div class="service-card reveal">
+      <h3>Nail Art</h3>
+      <p>Diseños personalizados para expresar tu estilo único.</p>
     </div>
 
-    <!-- TEXTO -->
-    <div class="about-text-block">
-      <p>
-        Soy técnica en uñas certificada y me apasiona crear diseños elegantes
-        y duraderos que resalten tu estilo personal.
-
-        Me especializo en manicura clásica, soft gel y nail art personalizado.
-        Mi objetivo es que cada clienta viva una experiencia cómoda,
-        profesional y hermosa.
-      </p>
-    </div>
-
-  </section>
+  </div>
 
 </section>
 
 <script src="/static/js/main.js"></script>
+
 </body>
 </html>

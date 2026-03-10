@@ -1,13 +1,40 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* document.addEventListener("DOMContentLoaded", function () {
 
-  const hero = document.querySelector(".hero");
+  const reveals = document.querySelectorAll(".reveal");
 
   window.addEventListener("scroll", function () {
 
-    let scroll = window.scrollY;
+    reveals.forEach(function(element){
 
-    hero.style.backgroundPositionY = scroll * 0.5 + "px";
+      const windowHeight = window.innerHeight;
+      const elementTop = element.getBoundingClientRect().top;
+      const visiblePoint = 100;
+
+      if(elementTop < windowHeight - visiblePoint){
+        element.classList.add("active");
+      }
+
+    });
 
   });
 
+});
+
+*/
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+
+    if(entry.isIntersecting){
+      entry.target.classList.add("active");
+      observer.unobserve(entry.target);
+    }
+
+  });
+},{
+  threshold: 0.15
+});
+
+document.querySelectorAll(".reveal").forEach(el => {
+  observer.observe(el);
 });
