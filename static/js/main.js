@@ -38,3 +38,18 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll(".reveal").forEach(el => {
   observer.observe(el);
 });
+
+// CALENDARIO
+
+const button = document.getElementById("open-calendar");
+const calendar = document.getElementById("calendar");
+
+if(button && calendar){
+
+button.addEventListener("click", function(){
+
+calendar.classList.toggle("active");
+
+});
+
+}

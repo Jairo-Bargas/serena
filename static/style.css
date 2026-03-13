@@ -255,6 +255,164 @@ body {
 .services-grid .service-card:nth-child(3){transition-delay:0.15s;}
 .services-grid .service-card:nth-child(4){transition-delay:0.2s;}
 
+/* ============ GALERÍA ================*/
+
+.gallery {
+  padding: 80px 20px;
+  background: #fafafa;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.gallery-item {
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-action {
+  margin-top: 40px;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 12px 28px;
+  border: 2px solid #000;
+  text-decoration: none;
+  color: #000;
+  border-radius: 30px;
+  transition: all .3s;
+}
+
+.btn-secondary:hover {
+  background: #000;
+  color: white;
+}
+
+/* ========= RESERVAS ========= */
+
+.booking{
+padding:100px 20px;
+text-align:center;
+background:#fff;
+}
+
+.booking button{
+margin-top:30px;
+}
+
+.calendar-wrapper{
+
+max-height:0;
+overflow:hidden;
+
+transition:max-height 0.5s ease;
+
+margin-top:40px;
+
+}
+
+.calendar-wrapper.active{
+max-height:800px;
+}
+
+.calendar-placeholder{
+
+height:600px;
+background:#f3f3f3;
+border-radius:12px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+color:#777;
+
+}
+
+/* ========== FOOTER =========== */
+
+.footer{
+background:#111;
+color:white;
+padding:20px 10px 10px;
+}
+
+.footer-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+align-items:center;
+}
+
+.footer-brand{
+text-align:left;
+}
+
+.footer-contact{
+text-align:right;
+}
+
+
+.footer h4{
+margin-bottom:5px;
+font-size:14px;
+}
+
+.footer h3{
+  font-size: 14px;
+}
+
+.footer p{
+  font-size: 10px;
+}
+
+.footer a{
+color:white;
+text-decoration:none;
+opacity:0.8;
+}
+
+.footer a:hover{
+opacity:1;
+}
+.footer-bottom{
+text-align:center;
+margin-top:10px;
+font-size:14px;
+opacity:0.6;
+}
+
+.footer-icons i{
+font-size:24px;
+color:white;
+transition:0.3s;
+}
+
+.footer-icons i:hover{
+transform:scale(1.15);
+}
+
+
 /* ===== RESPONSIVE ===== */
 @media (min-width: 768px) {
   .hero h1 {
@@ -264,4 +422,17 @@ body {
   .hero p {
     font-size: 28px;
   }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+
+  .footer-grid{
+  grid-template-columns:1fr;
+  text-align:center;
+  }
+
 }
+  
+
