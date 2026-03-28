@@ -53,3 +53,13 @@ calendar.classList.toggle("active");
 });
 
 }
+
+  const buttons = document.querySelectorAll('.btn-secondary');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(() => {
+        btn.blur();
+      }, 100);
+    });
+  });
