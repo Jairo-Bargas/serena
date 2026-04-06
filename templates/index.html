@@ -5,16 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Serena Nails: un espacio para que te sientas mimada y bella.">
   <title>Serena Nails</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Dancing+Script:wght@400..700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Luxurious+Script&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Allura&display=swap" rel="stylesheet">
 
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</noscript>
 
+  <link rel="preload" href="{{ url_for('static', filename='style.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" as="image" href="{{ url_for('static', filename='hero2.jpg') }}" media="(max-width: 767px)">
+  <noscript>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </noscript>
+  <style>
+    body {
+      margin: 0;
+      background-color: #D7C9B8;
+      color: #F5F1EA;
+      font-family: 'Josefin Sans', sans-serif;
+    }
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
+
+      background-image: url("{{ url_for('static', filename='hero2.jpg') }}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    @media (min-width: 768px) {
+      body{
+        background-color: #F5F1EA;
+      }
+      .hero{
+      height: 100dvh;
+      background-color: #B2967D;
+      background-image: none;
+      }
+      .hero-logo img{
+        display: block;
+        max-width: 30vh;
+      }
+      .hero-center h1{
+        font-size: 8vw;
+      }
+      .hero-top{
+        display: none;
+      }
+      .hero p {
+        font-size: 65px;
+      }
+    }
+</style>
 </head>
 
 
@@ -22,7 +75,7 @@
 <section class="hero">
 
   <div class="hero-logo">
-    <img src="../static/SNlogo.png" alt="logo-serena">
+    <img src="../static/SNlogo.webp" alt="logo-serena" fetchpriority="high" >
   </div>
   <div class="hero-top">
     <p class="welcome">BIENVENIDA A</p>
@@ -33,7 +86,7 @@
   </div>
 
   <div class="hero-buttons">
-    <a href="https://calendly.com/navcevichsh" class="btn-primary">Reservar Turno</a>
+    <a href="https://calendly.com/serena-nails" class="btn-primary">Reservar Turno</a>
     <a href="https://wa.me/+598097300766?text=Hola!%20Quiero%20reservar%20un%20turno." target="_blank" class="whatsapp-circle">
       <i class="fa-brands fa-whatsapp"></i>
     </a>
@@ -50,7 +103,7 @@
   </div>
      <!-- FOTO -->
   <div class="about-photo-block reveal">
-    <img src="/static/about2.jpg" alt="Sheila Navcevich">
+    <img src="/static/about2.webp" alt="Sheila Navcevich">
   </div>
 
   <!-- TEXTO -->
@@ -75,22 +128,22 @@
   <div class="services-grid">
 
     <div class="service-card reveal">
-      <h3>Kapping Gel</h3>
+      <h3>KAPPING GEL</h3>
       <p>Refuerzo sobre tu uña natural para mayor durabilidad y resistencia.</p>
     </div>
 
     <div class="service-card reveal">
-      <h3>Soft Gel</h3>
+      <h3>SOFT GEL</h3>
       <p>Extensiones ligeras y elegantes con acabado natural.</p>
     </div>
 
     <div class="service-card reveal">
-      <h3>Semipermanente</h3>
+      <h3>SEMIPERMANENTE</h3>
       <p>Esmaltado duradero con brillo perfecto por semanas.</p>
     </div>
 
     <div class="service-card reveal">
-      <h3>Nail Art</h3>
+      <h3>NAIL ART</h3>
       <p>Diseños personalizados para expresar tu estilo único.</p>
     </div>
 
@@ -144,6 +197,25 @@
   </div>
 
 </section>
+<section class="giftcards">
+
+  <div class="gift-container">
+    <h2 class="gift-title">GIFTCARDS</h2>
+    <p class="gift-subtitle">Un regalo para esa persona especial</p>
+  </div>
+  <div class="gift-grid">
+    <img src="../static/giftcard2.webp" loading="lazy" alt="giftcard-modelo2">
+    <img src="../static/giftcard1.webp" loading="lazy" alt="giftcard-modelo1">
+  </div>
+  <div class="gift-text">
+      <p>Si estás pensando en el detalle perfecto para alguien, las gift cards son para vos. Solo tenés que elegir el diseño y nosotros nos encargamos de hacerla llegar. Las gift cards vienen en una presentación especial y pueden ser personalizadas a tu gusto.</p>
+  </div>
+  <div class="giftcard-buy">
+      <a href="https://wa.me/+598097300766?text=Hola!%20Quiero%20regalar%20una%20giftcard." target="_blank" class="btn-secondary">
+        Regalar
+      </a>
+    </div>
+</section>
 <section class="booking">
 
   <div class="container">
@@ -161,14 +233,17 @@
     <div class="calendar-wrapper" id="calendar">
 
       <div class="calendar-placeholder">
-          <a href="https://calendly.com/navcevichsh/kapping" target="_blank" class="btn-secondary">
+          <a href="https://calendly.com/serena-nails/kapping" target="_blank" class="btn-secondary">
             Kapping
           </a>
-          <a href="https://calendly.com/navcevichsh/soft-gel" target="_blank" class="btn-secondary">
+          <a href="https://calendly.com/serena-nails/soft-gel" target="_blank" class="btn-secondary">
             Softgel
           </a>
-          <a href="https://calendly.com/navcevichsh/semipermanente" target="_blank" class="btn-secondary">
+          <a href="https://calendly.com/serena-nails/semipermanente" target="_blank" class="btn-secondary">
             Semipermanente
+          </a>
+          <a href="https://calendly.com/serena-nails/remocion" target="_blank" class="btn-secondary">
+            Remoción
           </a>
       </div>
 
