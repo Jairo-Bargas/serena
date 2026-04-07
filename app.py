@@ -1,6 +1,8 @@
 from flask import Flask, render_template
 import os
 
+from flask import send_from_directory
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -14,3 +16,5 @@ if __name__ == "__main__":
 @app.route('/sitemap.xml')
 def sitemap():
     return send_from_directory('static', 'sitemap.xml')
+
+
