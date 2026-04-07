@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </noscript>
 
+
   <link rel="preload" href="{{ url_for('static', filename='style.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" as="image" href="{{ url_for('static', filename='hero2.jpg') }}" media="(max-width: 767px)">
   <noscript>
@@ -75,7 +76,7 @@
 <section class="hero">
 
   <div class="hero-logo">
-    <img src="../static/SNlogo.webp" alt="logo-serena" fetchpriority="high" >
+    <img src="{{ url_for('static', filename='SNlogo.webp') }}" alt="logo-serena">
   </div>
   <div class="hero-top">
     <p class="welcome">BIENVENIDA A</p>

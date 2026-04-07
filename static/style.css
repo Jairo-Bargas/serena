@@ -22,13 +22,10 @@ body{
   position: relative;
   min-height: 100vh;
   min-height: 100svh;
-
   background-image: url("/static/hero2.jpg"); 
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
