@@ -14,3 +14,4 @@ Thumbs.db
 # entorno local
 .venv/
 serena.db
+.claude/
