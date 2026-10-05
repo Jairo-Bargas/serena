@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Tarjeta de {{ client.first_name }} · Club Serena{% endblock %}
+{% block meta %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}page-card{% endblock %}
+{% block footer %}{% endblock %}
+{% block mobile_bar %}{% endblock %}
+
+{% block content %}
+{% set total = LOYALTY.total %}
+{% set nxt = client.next_reward %}
+{% set last = client.visits[0] if client.visits else None %}
+<section class="card-page">
+  <div class="card-page__inner">
+    <p class="eyebrow">Club Serena</p>
+    <h1 class="card-page__hello">Hola, <em>{{ client.first_name }}</em></h1>
+
+    <div class="card-page__card">
+      {% with card_name=client.name, card_stamps=client.stamps, card_demo=False, card_code='N° ' ~ ('%04d' % client.id) %}{% include "partials/loyalty_card.html" %}{% endwith %}
+    </div>
+
+    <div class="card-status">
+      {% if client.stamps == 0 and last and last.stamp_number >= total %}
+        <p class="card-status__big">¡Completaste tu tarjeta! 🎉</p>
+        <p>Tu último servicio tuvo {{ last.discount }}% OFF. Ya empezás una tarjeta nueva.</p>
+      {% elif nxt %}
+        {% set left = nxt[0] - client.stamps %}
+        {% if left == 1 %}
+          <p class="card-status__big">¡Tu próximo servicio tiene <strong>{{ nxt[1] }}% OFF</strong>!</p>
+        {% else %}
+          <p class="card-status__big">Te faltan <strong>{{ left }}</strong> sellos para tu <strong>{{ nxt[1] }}% OFF</strong></p>
+        {% endif %}
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ client.stamps }}">
+          <span style="--p: {{ (client.stamps / total * 100) | round(1) }}%"></span>
+        </div>
+        <p class="card-status__small">{{ client.stamps }} de {{ total }} sellos{% if client.cards_completed %} · {{ client.cards_completed }} tarjeta{{ 's' if client.cards_completed > 1 }} completada{{ 's' if client.cards_completed > 1 }}{% endif %}</p>
+      {% endif %}
+    </div>
+
+    {% if is_admin %}
+    <div class="admin-box">
+      <div class="admin-box__head">
+        <strong>Panel de Sheila</strong>
+        <a href="{{ url_for('admin') }}">← Todas las clientas</a>
+      </div>
+      {% set coming = LOYALTY.rewards.get(client.stamps + 1) %}
+      <form method="post" action="{{ url_for('admin_add_stamp', client_id=client.id) }}" class="admin-box__stamp">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+        <label for="service">Servicio de hoy</label>
+        <select id="service" name="service">
+          {% for s in services %}<option>{{ s }}</option>{% endfor %}
+        </select>
+        {% if coming %}<p class="admin-box__alert">Este es el sello {{ client.stamps + 1 }}: <strong>aplicale {{ coming }}% de descuento</strong>.</p>{% endif %}
+        <button class="btn" type="submit"><svg aria-hidden="true"><use href="#i-plus"/></svg> Sumar sello {{ client.stamps + 1 }}</button>
+      </form>
+      <div class="admin-box__row">
+        <a class="btn btn--outline btn--small" href="https://wa.me/598{{ client.phone }}?text={{ ('Hola ' ~ client.first_name ~ '! Esta es tu tarjeta del Club Serena 💅 Guardala en tu celular: ' ~ card_url) | urlencode }}" target="_blank" rel="noopener">
+          <svg aria-hidden="true"><use href="#i-whatsapp"/></svg> Enviar por WhatsApp
+        </a>
+        <form method="post" action="{{ url_for('admin_undo_stamp', client_id=client.id) }}" onsubmit="return confirm('¿Deshacer el último sello?')">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+          <button class="btn btn--outline btn--small" type="submit">Deshacer último</button>
+        </form>
+      </div>
+      <details class="admin-box__edit">
+        <summary>Editar datos</summary>
+        <form method="post" action="{{ url_for('admin_edit_client', client_id=client.id) }}">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+          <label>Nombre <input name="name" value="{{ client.name }}" required></label>
+          <label>Notas (solo las ves vos) <textarea name="notes" rows="3" placeholder="Ej.: prefiere té verde, alérgica a…">{{ client.notes }}</textarea></label>
+          <p class="admin-box__muted">Celular: 0{{ client.phone }}</p>
+          <button class="btn btn--small" type="submit">Guardar</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_delete_client', client_id=client.id) }}" onsubmit='return confirm({{ ("¿Eliminar a " ~ client.name ~ " y todos sus sellos? No se puede deshacer.") | tojson }})'>
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+          <button class="admin-box__danger" type="submit">Eliminar clienta</button>
+        </form>
+      </details>
+    </div>
+    {% endif %}
+
+    <div class="card-qr">
+      <div class="card-qr__code" data-qr="{{ card_url }}" aria-label="Código QR de tu tarjeta"></div>
+      <div>
+        <strong>Mostrá este código</strong>
+        <p>En cada visita, Sheila lo escanea y te suma tu sello.</p>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <button type="button" class="btn btn--outline" data-share="{{ card_url }}" data-share-title="Mi tarjeta Club Serena">
+        <svg aria-hidden="true"><use href="#i-share"/></svg> <span>Guardar / compartir link</span>
+      </button>
+      <a class="btn" href="{{ B.calendly }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-calendar"/></svg> Reservar turno</a>
+    </div>
+
+    <details class="card-install">
+      <summary>📲 Agregala a la pantalla de inicio</summary>
+      <p><strong>iPhone:</strong> en Safari tocá <em>Compartir</em> → <em>Agregar a inicio</em>.</p>
+      <p><strong>Android:</strong> en Chrome tocá <em>⋮</em> → <em>Agregar a pantalla principal</em>.</p>
+    </details>
+
+    {% if client.visits %}
+    <div class="history">
+      <h2>Tus visitas</h2>
+      <ul>
+        {% for v in client.visits[:12] %}
+        <li>
+          <span class="history__stamp">{{ v.stamp_number }}</span>
+          <span class="history__what">{{ v.service }}<small>{{ v.created_at | fecha }}</small></span>
+          {% if v.discount %}<span class="tag tag--solid">{{ v.discount }}% OFF</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <a class="card-page__home" href="{{ url_for('home') }}">
+      <img src="{{ url_for('static', filename='img/logo-espresso.png') }}" alt="" width="30" height="27"> serenanailsuy.com
+    </a>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  document.querySelectorAll("[data-qr]").forEach((el) => {
+    if (!window.QRCode) return;
+    new QRCode(el, { text: el.dataset.qr, width: 132, height: 132, colorDark: "#4A342A", colorLight: "#FBF8F3", correctLevel: QRCode.CorrectLevel.M });
+    el.removeAttribute("title");
+  });
+</script>
+{% endblock %}

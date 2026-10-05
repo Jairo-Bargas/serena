@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Ingresar · Panel Serena{% endblock %}
+{% block meta %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+{% block footer %}{% endblock %}
+{% block mobile_bar %}{% endblock %}
+
+{% block content %}
+<section class="admin-login">
+  <form method="post" class="admin-login__box">
+    <img src="{{ url_for('static', filename='img/logo-espresso.png') }}" alt="" width="64" height="58">
+    <h1>Panel <em>Serena</em></h1>
+    {% if not configured %}
+      <p class="admin-box__alert">Falta configurar la variable <code>ADMIN_PASSWORD</code> en el servidor.</p>
+    {% endif %}
+    <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+    <label for="password">Contraseña</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</section>
+{% endblock %}

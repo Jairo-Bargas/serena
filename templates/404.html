@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Página no encontrada · Serena Nails{% endblock %}
+{% block meta %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<section class="admin-login">
+  <div class="admin-login__box">
+    <img src="{{ url_for('static', filename='img/logo-espresso.png') }}" alt="" width="64" height="58">
+    <h1>Ups, <em>no está acá</em></h1>
+    <p>La página que buscás no existe o cambió de lugar.</p>
+    <a class="btn" href="{{ url_for('home') }}">Volver al inicio</a>
+  </div>
+</section>
+{% endblock %}

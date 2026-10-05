@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Clientas · Panel Serena{% endblock %}
+{% block meta %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+{% block footer %}{% endblock %}
+{% block mobile_bar %}{% endblock %}
+
+{% block content %}
+<section class="admin">
+  <div class="admin__inner">
+    <div class="admin__top">
+      <div>
+        <p class="eyebrow">Panel</p>
+        <h1 class="admin__title">Club <em>Serena</em></h1>
+      </div>
+      <form method="post" action="{{ url_for('admin_logout') }}">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+        <button class="btn btn--outline btn--small" type="submit">Salir</button>
+      </form>
+    </div>
+
+    <div class="admin__stats">
+      <div><strong>{{ stats.clients }}</strong><span>clientas</span></div>
+      <div><strong>{{ stats.visits_month }}</strong><span>sellos este mes</span></div>
+      <div><strong>{{ stats.rewards_soon }}</strong><span>con descuento en la próxima</span></div>
+    </div>
+
+    <details class="admin__new" {% if not stats.clients %}open{% endif %}>
+      <summary><svg aria-hidden="true"><use href="#i-plus"/></svg> Nueva clienta</summary>
+      <form method="post" action="{{ url_for('admin_create_client') }}">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+        <label>Nombre y apellido <input name="name" required autocomplete="off"></label>
+        <label>Celular <input name="phone" type="tel" inputmode="tel" placeholder="09X XXX XXX" required autocomplete="off"></label>
+        <p class="admin-box__muted">La tarjeta arranca con {{ LOYALTY.welcome }} sellos de regalo.</p>
+        <button class="btn" type="submit">Crear tarjeta</button>
+      </form>
+    </details>
+
+    <form class="admin__search" method="get">
+      <input name="q" value="{{ q }}" placeholder="Buscar por nombre o celular" type="search" aria-label="Buscar clienta">
+      <button class="btn btn--small" type="submit">Buscar</button>
+    </form>
+
+    <ul class="admin__list">
+      {% for c in clients %}
+      {% set coming = LOYALTY.rewards.get(c.stamps + 1) %}
+      <li>
+        <a href="{{ url_for('tarjeta', token=c.token) }}">
+          <span class="admin__avatar">{{ c.first_name[:1] | upper }}</span>
+          <span class="admin__who"><strong>{{ c.name }}</strong><small>0{{ c.phone }}</small></span>
+          <span class="admin__dots" aria-label="{{ c.stamps }} de {{ LOYALTY.total }} sellos">
+            {% for n in range(1, LOYALTY.total + 1) %}<i class="{% if n <= c.stamps %}on{% endif %}{% if LOYALTY.rewards.get(n) %} r{% endif %}"></i>{% endfor %}
+          </span>
+          {% if coming %}<span class="tag tag--solid">Próx. {{ coming }}%</span>{% endif %}
+        </a>
+      </li>
+      {% else %}
+      <li class="admin__empty">{% if q %}No encontré clientas con “{{ q }}”.{% else %}Todavía no hay clientas. ¡Creá la primera!{% endif %}</li>
+      {% endfor %}
+    </ul>
+
+    <p class="admin-box__muted admin__tip">Tip: escaneá el QR de la tarjeta de una clienta con la cámara del celular (con este panel abierto en el mismo navegador) y vas directo a sumarle el sello.</p>
+  </div>
+</section>
+{% endblock %}

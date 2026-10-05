@@ -1,0 +1,26 @@
+{# Tarjeta de fidelización.
+   Variables: card_name, card_stamps (int), card_demo (bool), card_code (str opcional) #}
+<div class="lcard{% if card_demo %} lcard--demo{% endif %}" data-lcard data-stamps="{{ card_stamps }}">
+  <div class="lcard__shine" aria-hidden="true"></div>
+  <div class="lcard__head">
+    <img src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="" width="44" height="40">
+    <div>
+      <span class="lcard__club">Club</span>
+      <span class="lcard__title">Serena</span>
+    </div>
+  </div>
+  <ol class="lcard__stamps" aria-label="{{ card_stamps }} de {{ LOYALTY.total }} sellos">
+    {% for n in range(1, LOYALTY.total + 1) %}
+      {% set reward = LOYALTY.rewards.get(n) %}
+      <li class="stamp{% if n <= card_stamps %} is-on{% endif %}{% if reward %} stamp--reward{% endif %}{% if card_demo and n <= LOYALTY.welcome %} stamp--gift{% endif %}">
+        <span class="stamp__num">{{ n }}</span>
+        <img class="stamp__mark" src="{{ url_for('static', filename='img/logo-espresso.png') }}" alt="" width="22" height="20">
+        {% if reward %}<span class="stamp__label">{{ reward }}%</span>{% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+  <div class="lcard__foot">
+    <span class="lcard__name">{{ card_name }}</span>
+    <span class="lcard__code">{{ card_code or 'SN · Paysandú' }}</span>
+  </div>
+</div>

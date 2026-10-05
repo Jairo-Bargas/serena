@@ -1,316 +1,443 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FTX3RCS6LH"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+{% extends "base.html" %}
 
-    gtag('config', 'G-FTX3RCS6LH');
-  </script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Serena Nails en Paysandú, Uruguay. Servicios de manicura, esmaltado semipermanente, kapping gel y nail art. Reservá tu turno online.">
-  <title>Serena Nails | Manicura en Paysandú</title>
-  <meta property="og:title" content="Serena Nails">
-  <meta property="og:description" content="Manicura y nail art en Paysandú. Reservá tu turno online.">
-  <meta property="og:image" content="https://serenanailsuy.com/static/hero2.jpg">
-  <meta property="og:url" content="https://serenanailsuy.com">
-  <meta property="og:type" content="website">
-  <meta name="keywords" content="uñas Montevideo, manicura, nail art, esmaltado semipermanente, Serena Nails">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="icon" href="/static/sn_favicon.png" sizes="32x32">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Allura&display=swap" rel="stylesheet">
+{% block head %}
+<link rel="preload" as="image" href="{{ url_for('static', filename='img/sheila-espacio.webp') }}">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NailSalon",
+  "name": "Serena Nails",
+  "image": "{{ B.url }}{{ url_for('static', filename='img/sheila-espacio.webp') }}",
+  "url": "{{ B.url }}",
+  "telephone": "{{ B.phone }}",
+  "email": "{{ B.email }}",
+  "address": {"@type": "PostalAddress", "streetAddress": "{{ B.address }}", "addressLocality": "Paysandú", "addressCountry": "UY"},
+  "sameAs": ["{{ B.instagram }}"],
+  "founder": "{{ B.owner }}",
+  "makesOffer": [
+    {% for group in ('manos', 'pies') %}{% for s in services[group] %}{% if s.price %}
+    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "{{ s.name }}"}, "price": "{{ s.price }}", "priceCurrency": "UYU"},{% endif %}{% endfor %}{% endfor %}
+    {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Nail art"}}
+  ]
+}
+</script>
+{% endblock %}
 
-  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</noscript>
+{% block body_class %}page-home{% endblock %}
 
-
-  <link rel="preload" href="{{ url_for('static', filename='style.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" as="image" href="{{ url_for('static', filename='hero2.jpg') }}" media="(max-width: 767px)">
-  <noscript>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  </noscript>
-  <style>
-    body {
-      margin: 0;
-      background-color: #D7C9B8;
-      color: #F5F1EA;
-      font-family: 'Josefin Sans', sans-serif;
-    }
-
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      min-height: 100svh;
-
-      background-image: url("{{ url_for('static', filename='hero2.jpg') }}");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    @media (min-width: 768px) {
-      body{
-        background-color: #F5F1EA;
-      }
-      .hero{
-      height: 100dvh;
-      background-color: #B2967D;
-      background-image: none;
-      }
-      .hero-logo img{
-        display: block;
-        max-width: 30vh;
-      }
-      .hero-center h1{
-        font-size: 8vw;
-      }
-      .hero-top{
-        display: none;
-      }
-      .hero p {
-        font-size: 65px;
-      }
-    }
-</style>
-</head>
-
-
-<body>
-<section class="hero">
-
-  <div class="hero-logo">
-    <img src="{{ url_for('static', filename='SNlogo.webp') }}" alt="logo-serena">
+{% block preloader %}
+<div class="preloader" data-preloader aria-hidden="true">
+  <div class="preloader__inner">
+    <img src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="" width="120" height="108">
+    <span class="preloader__line"><span></span></span>
   </div>
-  <div class="hero-top">
-    <p class="welcome">BIENVENIDA A</p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+{# ============================================================ HERO #}
+<section class="hero" id="inicio" data-hero>
+  <div class="hero__media" data-hero-media>
+    {% if hero_video %}
+      <video class="hero__video" autoplay muted loop playsinline preload="metadata"
+             poster="{{ url_for('static', filename='img/sheila-espacio.webp') }}">
+        <source src="{{ url_for('static', filename=hero_video) }}" type="video/mp4">
+      </video>
+    {% else %}
+      <div class="slides" data-slides>
+        <img class="slide is-active" src="{{ url_for('static', filename='img/sheila-espacio.webp') }}" alt="" fetchpriority="high">
+        <img class="slide" src="{{ url_for('static', filename='img/trabajo-2.webp') }}" alt="" loading="lazy">
+        <img class="slide" src="{{ url_for('static', filename='img/trabajo-6.webp') }}" alt="" loading="lazy">
+        <img class="slide" src="{{ url_for('static', filename='img/trabajo-5.webp') }}" alt="" loading="lazy">
+      </div>
+    {% endif %}
+    <div class="hero__veil"></div>
+    <div class="grain" aria-hidden="true"></div>
   </div>
 
-  <div class="hero-center">
-    <h1>SERENA NAILS</h1>
+  <div class="hero__content">
+    <p class="eyebrow eyebrow--light" data-hero-item>Paysandú · Manos &amp; pies</p>
+    <h1 class="hero__title" aria-label="Serena Nails">
+      <span class="hero__script" data-hero-item>Serena</span>
+      <span class="hero__caps" data-hero-item>N&nbsp;A&nbsp;I&nbsp;L&nbsp;S</span>
+    </h1>
+    <p class="hero__lead" data-hero-item>
+      Manicura, nail art y <strong>pedicuría spa</strong>, con un café o té y chocolate de regalo.
+      Porque no es solo un servicio: <em>es tu momento.</em>
+    </p>
+    <div class="hero__ctas" data-hero-item>
+      <a class="btn btn--light" href="{{ B.calendly }}" target="_blank" rel="noopener" data-calendly="{{ B.calendly }}">
+        Reservar turno <svg aria-hidden="true"><use href="#i-arrow"/></svg>
+      </a>
+      <a class="btn btn--ghost-light" href="#servicios">Ver servicios</a>
+    </div>
   </div>
 
-  <div class="hero-buttons">
-    <a href="https://calendly.com/serena-nails" class="btn-primary">Reservar Turno</a>
-    <a href="https://wa.me/+598097300766?text=Hola!%20Quiero%20reservar%20un%20turno." target="_blank" class="whatsapp-circle">
-      <i class="fa-brands fa-whatsapp"></i>
+  <a class="hero__scroll" href="#sobre-mi" aria-label="Bajar">
+    <span>Scroll</span><i></i>
+  </a>
+  <div class="hero__dots" data-slide-dots aria-hidden="true"></div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track" data-marquee>
+    {% for _ in range(2) %}
+    <span>Kapping gel</span><i>✦</i>
+    <span>Soft gel</span><i>✦</i>
+    <span>Semipermanente</span><i>✦</i>
+    <span class="script">Pedicuría spa</span><i>✦</i>
+    <span>Nail art</span><i>✦</i>
+    <span>Café, té &amp; chocolate</span><i>✦</i>
+    {% endfor %}
+  </div>
+</div>
+
+{# ============================================================ SOBRE MÍ #}
+<section class="about section" id="sobre-mi">
+  <div class="container about__grid">
+    <figure class="about__photo" data-reveal-img>
+      <div class="about__frame">
+        <img src="{{ url_for('static', filename='img/sheila.webp') }}" alt="Sheila Navcevich, manicurista de Serena Nails" width="700" height="934" loading="lazy" data-parallax="-8">
+      </div>
+      <figcaption class="about__badge" data-float>
+        <svg aria-hidden="true"><use href="#i-heart"/></svg>
+        <span>Atención<br>personalizada</span>
+      </figcaption>
+    </figure>
+
+    <div class="about__text">
+      <p class="eyebrow" data-reveal>Bienvenida</p>
+      <h2 class="display" data-split>Hola, soy <em>Sheila</em></h2>
+      <p class="lead" data-reveal>
+        Bienvenida a este espacio donde me enfoco en brindar un servicio seguro, prolijo y personalizado.
+      </p>
+      <p data-reveal>
+        Mi objetivo es que te sientas cómoda, tranquila y feliz con el resultado, y que además puedas vivir
+        una experiencia agradable que te permita relajarte y sentirte en confianza. Trabajo con dedicación y
+        excelentes productos para lograr diseños delicados y elegantes, en un ambiente pensado para que
+        disfrutes tu tiempo.
+      </p>
+      <p class="signature" data-reveal>Sheila Navcevich</p>
+      <ul class="about__facts" data-stagger>
+        <li><strong>Manos</strong><span>Kapping · Soft gel · Semi · Nail art</span></li>
+        <li><strong>Pies</strong><span>Pedicuría spa con masajes</span></li>
+        <li><strong>Regalo</strong><span>Café o té + chocolate</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{# ============================================================ EXPERIENCIA #}
+<section class="experience section section--dark" id="experiencia">
+  <div class="container">
+    <p class="eyebrow eyebrow--light" data-reveal>La experiencia Serena</p>
+    <p class="statement" data-words>
+      Cada visita es una pausa. Te recibimos con un <em>café o un té</em> a elección y un <em>chocolate</em>
+      que es solo para vos, en un espacio renovado pensado para que desconectes.
+    </p>
+
+    <div class="perks" data-stagger>
+      <article class="perk perk--cup">
+        <div class="perk__icon cup" aria-hidden="true">
+          <span class="cup__steam"><i></i><i></i><i></i></span>
+          <svg><use href="#i-cup"/></svg>
+        </div>
+        <h3>Café o té + chocolate</h3>
+        <p>De regalo en cada servicio. Vos elegís cómo acompañar tu momento.</p>
+        <small>*Excepto en remoción.</small>
+      </article>
+      <article class="perk">
+        <div class="perk__icon" aria-hidden="true"><svg><use href="#i-room"/></svg></div>
+        <h3>Un espacio renovado</h3>
+        <p>Un cuarto cálido y cómodo, preparado para que te relajes mientras te atendemos.</p>
+      </article>
+      <article class="perk">
+        <div class="perk__icon" aria-hidden="true"><svg><use href="#i-shield"/></svg></div>
+        <h3>Seguro y prolijo</h3>
+        <p>Higiene en cada paso y excelentes productos para cuidar tus uñas naturales.</p>
+      </article>
+      <article class="perk">
+        <div class="perk__icon" aria-hidden="true"><svg><use href="#i-sparkle"/></svg></div>
+        <h3>Club Serena</h3>
+        <p>Sumá sellos en cada visita y obtené hasta <strong>50% OFF</strong> en tus servicios.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+{# ============================================================ SERVICIOS #}
+<section class="services section" id="servicios">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow" data-reveal>Servicios &amp; precios</p>
+      <h2 class="display" data-split>Manos y <em>pies</em>, con el mismo amor</h2>
+      <p class="section-head__sub" data-reveal>Elegí tu servicio y reservá directo en la agenda online.</p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Tipo de servicio" data-tabs data-reveal>
+      <button role="tab" aria-selected="true" aria-controls="tab-manos" id="t-manos" data-tab="manos">
+        <svg aria-hidden="true"><use href="#i-hand"/></svg> Manos
+      </button>
+      <button role="tab" aria-selected="false" aria-controls="tab-pies" id="t-pies" data-tab="pies" tabindex="-1">
+        <svg aria-hidden="true"><use href="#i-foot"/></svg> Pies <span class="tag">Nuevo</span>
+      </button>
+      <span class="tabs__pill" aria-hidden="true"></span>
+    </div>
+
+    {% for group in ('manos', 'pies') %}
+    <div class="service-list{% if loop.first %} is-active{% endif %}" role="tabpanel" id="tab-{{ group }}" aria-labelledby="t-{{ group }}" data-panel="{{ group }}"{% if not loop.first %} hidden{% endif %}>
+      {% for s in services[group] %}
+      <article class="service{% if s.featured %} service--featured{% endif %}" data-tilt>
+        <div class="service__top">
+          <span class="service__num">{{ '%02d' % loop.index }}</span>
+          {% if s.slug == 'pedicuria-spa' %}<span class="tag tag--solid">Nuevo</span>{% endif %}
+        </div>
+        <h3 class="service__name">{{ s.name }}</h3>
+        <p class="service__tagline">{{ s.tagline }}</p>
+        <p class="service__desc">{{ s.desc }}</p>
+        {% if s.includes %}
+        <ul class="service__includes">
+          {% for item in s.includes %}<li><svg aria-hidden="true"><use href="#i-check"/></svg>{{ item }}</li>{% endfor %}
+          <li><svg aria-hidden="true"><use href="#i-cup"/></svg>Café o té + chocolate</li>
+        </ul>
+        {% endif %}
+        <div class="service__bottom">
+          <p class="service__price">
+            {% if s.price %}<small>UYU</small><span data-count="{{ s.price }}">{{ s.price | uyu }}</span>{% else %}<span class="service__ask">Consultar</span>{% endif %}
+          </p>
+          <a class="btn btn--small" href="{{ s.book }}" target="_blank" rel="noopener" data-calendly="{{ s.book }}">Reservar</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    <p class="swipe-hint" aria-hidden="true">Deslizá para ver más <svg><use href="#i-arrow"/></svg></p>
+
+    <div class="services__extra" data-reveal>
+      {% for s in services.extras %}
+      <div>
+        <strong>{{ s.name }}</strong> · {{ s.desc }}
+      </div>
+      <a href="{{ s.book }}" target="_blank" rel="noopener" data-calendly="{{ s.book }}" class="link-arrow">Reservar {{ s.name|lower }} <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ============================================================ ESPACIO #}
+<section class="space section section--sand" id="espacio">
+  <div class="container space__grid">
+    <div class="space__text">
+      <p class="eyebrow" data-reveal>Tu lugar</p>
+      <h2 class="display" data-split>Un espacio <em>renovado</em> para vos</h2>
+      <p class="lead" data-reveal>
+        Renovamos cada rincón para que tu turno se sienta como una escapada:
+        cómodo, cálido y con todo lo necesario para que solo te ocupes de disfrutar.
+      </p>
+      <ul class="checks" data-stagger>
+        <li><svg aria-hidden="true"><use href="#i-check"/></svg>Manos y pies en el mismo lugar</li>
+        <li><svg aria-hidden="true"><use href="#i-check"/></svg>Café o té a elección con chocolate</li>
+        <li><svg aria-hidden="true"><use href="#i-check"/></svg>Higiene y prolijidad en cada paso</li>
+      </ul>
+      <a class="link-arrow" href="{{ B.instagram }}" target="_blank" rel="noopener" data-reveal>
+        Mirá más en {{ B.instagram_handle }} <svg aria-hidden="true"><use href="#i-arrow"/></svg>
+      </a>
+    </div>
+
+    <div class="reel" data-reel data-reveal-img>
+      <div class="reel__frame">
+        <div class="reel__bars" data-reel-bars aria-hidden="true"></div>
+        {% if space_videos %}
+          {% for v in space_videos %}
+          <video class="reel__item{% if loop.first %} is-active{% endif %}" muted playsinline preload="{{ 'auto' if loop.first else 'none' }}" data-reel-item>
+            <source src="{{ url_for('static', filename=v) }}" type="video/mp4">
+          </video>
+          {% endfor %}
+        {% else %}
+          {% for img in ['img/sheila-espacio.webp', 'img/trabajo-1.webp', 'img/trabajo-3.webp', 'img/trabajo-4.webp'] %}
+          <img class="reel__item{% if loop.first %} is-active{% endif %}" src="{{ url_for('static', filename=img) }}" alt="" loading="lazy" data-reel-item>
+          {% endfor %}
+        {% endif %}
+        <div class="reel__caption">
+          <img src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="" width="28" height="25">
+          <span>serenanails.uy</span>
+        </div>
+      </div>
+      <div class="reel__glow" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+{# ============================================================ TRABAJOS #}
+<section class="works section" id="trabajos" data-works>
+  <div class="container works__head">
+    <div>
+      <p class="eyebrow" data-reveal>Trabajos</p>
+      <h2 class="display" data-split>Diseños <em>delicados</em> y elegantes</h2>
+    </div>
+    <a class="btn btn--outline" href="{{ B.instagram }}" target="_blank" rel="noopener" data-reveal>
+      <svg aria-hidden="true"><use href="#i-instagram"/></svg> Ver galería completa
     </a>
   </div>
-
+  <div class="works__viewport" data-works-viewport>
+    <ul class="works__track" data-works-track>
+      {% for g in gallery %}
+      <li class="work">
+        <button type="button" class="work__btn" data-lightbox="{{ url_for('static', filename=g.src) }}" aria-label="Ampliar: {{ g.alt }}">
+          <img src="{{ url_for('static', filename=g.sm) }}" srcset="{{ url_for('static', filename=g.sm) }} 480w, {{ url_for('static', filename=g.src) }} 900w" sizes="(min-width: 900px) 30vw, 72vw" alt="{{ g.alt }}" loading="lazy" width="480" height="640">
+          <span class="work__num">{{ '%02d' % loop.index }}</span>
+        </button>
+      </li>
+      {% endfor %}
+      <li class="work work--cta">
+        <a href="{{ B.instagram }}" target="_blank" rel="noopener">
+          <svg aria-hidden="true"><use href="#i-instagram"/></svg>
+          <span class="script">Más diseños</span>
+          <small>{{ B.instagram_handle }}</small>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="works__progress" aria-hidden="true"><span data-works-progress></span></div>
 </section>
 
-
-<section class="about">
-  <!-- NOMBRE -->
-  <div class="about-name-block reveal">
-    <h2 class="name-first reveal">Sheila</h2>
-    <h2 class="name-last reveal">NAVCEVICH</h2>
+{# ============================================================ CLUB SERENA #}
+<section class="club section section--dark" id="club">
+  <div class="container club__grid">
+    <div class="club__text">
+      <p class="eyebrow eyebrow--light" data-reveal>Programa de fidelidad</p>
+      <h2 class="display display--light" data-split>Club <em>Serena</em></h2>
+      <p class="lead" data-reveal>Tu tarjeta digital de sellos, siempre en tu celular. Cada servicio suma, y los premios llegan rápido.</p>
+      <ol class="club__steps" data-stagger>
+        <li><span>2</span><div><strong>Te regalamos 2 sellos</strong>Al sumarte, tu tarjeta ya arranca con los dos primeros servicios.</div></li>
+        <li><span>5</span><div><strong>25% OFF</strong>En tu 5º servicio.</div></li>
+        <li><span>10</span><div><strong>50% OFF</strong>En tu 10º servicio. ¡Y empezás una tarjeta nueva!</div></li>
+      </ol>
+      <a class="btn btn--light" href="{{ url_for('fidelidad') }}" data-reveal>Conocé el Club <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="club__card" data-club-card>
+      {% with card_name='Tu nombre', card_stamps=0, card_demo=True %}{% include "partials/loyalty_card.html" %}{% endwith %}
+    </div>
   </div>
-     <!-- FOTO -->
-  <div class="about-photo-block reveal">
-    <img src="/static/about2.webp" alt="Sheila Navcevich">
-  </div>
-
-  <!-- TEXTO -->
-  <div class="about-text-block reveal">
-    <p>
-      Bienvenida a este espacio donde me enfoco en brindar un servicio seguro, prolijo y personalizado. Mi objetivo es que te sientas cómoda, tranquila y feliz con el resultado, que además puedas vivir una experiencia agradable que te permita relajarte y sentirte en confianza.
-
-      Trabajo con dedicación y excelentes productos para lograr diseños delicados y elegantes, en un ambiente pensado para que disfrutes tu tiempo, porque sé que no es solo un servicio, sino es tu momento.
-    </p>
-
-  </div>
- 
 </section>
 
-<section class="services">
-
-  <h2 class="services-title">SERVICIOS</h2>
-
-  <div class="services-grid">
-
-    <div class="service-card reveal">
-      <h3>KAPPING GEL</h3>
-      <p>Refuerzo sobre la uña natural para dar firmeza.</p>
-      <p class="text_price">750 UYU</p>
+{# ============================================================ GIFTCARDS #}
+<section class="gift section" id="giftcards">
+  <div class="container gift__grid">
+    <div class="gift__visual" data-flip>
+      <div class="gift__card">
+        <img class="gift__face gift__face--front" src="{{ url_for('static', filename='img/giftcard-1.webp') }}" alt="Giftcard Serena Nails, diseño oscuro" loading="lazy">
+        <img class="gift__face gift__face--back" src="{{ url_for('static', filename='img/giftcard-2.webp') }}" alt="Giftcard Serena Nails, diseño rosa" loading="lazy">
+      </div>
+      <p class="gift__hint">Tocá la tarjeta para girarla</p>
     </div>
-
-    <div class="service-card reveal">
-      <h3>SOFT GEL</h3>
-      <p>Extensión de uñas con tips flexibles de gel.</p>
-      <p class="text_price">900 UYU</p>
-    </div>
-
-    <div class="service-card reveal">
-      <h3>SEMIPERMANENTE</h3>
-      <p>Esmaltado que brinda color, brillo y duración.</p>
-      <p class="text_price">650 UYU</p>
-    </div>
-
-    <div class="service-card reveal">
-      <h3>NAIL ART</h3>
-      <p>Diseños personalizados para expresar tu estilo único.</p>
-      <p class="text_price">Consultar precio</p>
-      
-    </div>
-
-  </div>
-
-</section>
-
-<section class="gallery">
-
-  <div class="container">
-
-    <h2 class="section-title">TRABAJOS</h2>
-    <p class="section-subtitle">
-      Algunos diseños realizados
-    </p>
-
-    <div class="gallery-grid">
-
-      <div class="gallery-item">
-        <img src="/static/nails1.webp" loading="lazy" alt="Diseño de uñas">
-      </div>
-
-      <div class="gallery-item">
-        <img src="/static/nails2.webp" loading="lazy" alt="Diseño de uñas">
-      </div>
-
-      <div class="gallery-item">
-        <img src="/static/nails3.webp" loading="lazy" alt="Diseño de uñas">
-      </div>
-
-      <div class="gallery-item">
-        <img src="/static/nails4.webp" loading="lazy" alt="Diseño de uñas">
-      </div>
-
-      <div class="gallery-item">
-        <img src="/static/nails5.webp" loading="lazy" alt="Diseño de uñas">
-      </div>
-
-      <div class="gallery-item">
-        <img src="/static/nails6.webp" loading="lazy" alt="Diseño de uñas">
-      </div>
-
-    </div>
-
-    <div class="gallery-action">
-      <a href="https://www.instagram.com/serenanails.uy/" class="btn-secondary">
-        Ir a galería
+    <div class="gift__text">
+      <p class="eyebrow" data-reveal>Giftcards</p>
+      <h2 class="display" data-split>Un regalo para esa <em>persona especial</em></h2>
+      <p class="lead" data-reveal>
+        Si estás pensando en el detalle perfecto, las gift cards son para vos. Elegí el diseño y nosotras
+        nos encargamos de hacerla llegar, en una presentación especial y personalizada a tu gusto.
+      </p>
+      <a class="btn" href="https://wa.me/{{ B.whatsapp }}?text=Hola!%20Quiero%20regalar%20una%20giftcard." target="_blank" rel="noopener" data-reveal>
+        <svg aria-hidden="true"><use href="#i-gift"/></svg> Regalar una giftcard
       </a>
     </div>
-
   </div>
-
 </section>
-<section class="giftcards">
 
-  <div class="gift-container">
-    <h2 class="gift-title">GIFTCARDS</h2>
-    <p class="gift-subtitle">Un regalo para esa persona especial</p>
-  </div>
-  <div class="gift-grid">
-    <img src="../static/giftcard2.webp" loading="lazy" alt="giftcard-modelo2">
-    <img src="../static/giftcard1.webp" loading="lazy" alt="giftcard-modelo1">
-  </div>
-  <div class="gift-text">
-      <p>Si estás pensando en el detalle perfecto para alguien, las gift cards son para vos. Solo tenés que elegir el diseño y nosotros nos encargamos de hacerla llegar. Las gift cards vienen en una presentación especial y pueden ser personalizadas a tu gusto.</p>
-  </div>
-  <div class="giftcard-buy">
-      <a href="https://wa.me/+598097300766?text=Hola!%20Quiero%20regalar%20una%20giftcard." target="_blank" class="btn-secondary">
-        Regalar
-      </a>
-    </div>
-</section>
-<section class="booking">
-
+{# ============================================================ RESERVAR #}
+<section class="book section" id="reservar">
   <div class="container">
-
-    <h2 class="section-title">RESERVA TU TURNO</h2>
-
-    <p class="section-subtitle">
-      Elegí el horario que mejor te quede desde nuestro calendario
-    </p>
-
-    <button class="btn-secondary" id="open-calendar">
-        Ver disponibilidad
-    </button>
-
-    <div class="calendar-wrapper" id="calendar">
-
-      <div class="calendar-placeholder">
-          <a href="https://calendly.com/serena-nails/kapping" target="_blank" class="btn-secondary">
-            Kapping
-          </a>
-          <a href="https://calendly.com/serena-nails/soft-gel" target="_blank" class="btn-secondary">
-            Softgel
-          </a>
-          <a href="https://calendly.com/serena-nails/semipermanente" target="_blank" class="btn-secondary">
-            Semipermanente
-          </a>
-          <a href="https://calendly.com/serena-nails/remocion" target="_blank" class="btn-secondary">
-            Remoción
-          </a>
+    <div class="book__panel" data-reveal>
+      <div class="book__bg" aria-hidden="true">
+        <img src="{{ url_for('static', filename='img/trabajo-6.webp') }}" alt="" loading="lazy" data-parallax="-12">
       </div>
-
+      <div class="book__content">
+        <p class="eyebrow eyebrow--light">Reservá tu turno</p>
+        <h2 class="display display--light">Elegí el horario que <em>mejor te quede</em></h2>
+        <p>La agenda está siempre actualizada. Elegí el servicio, el día y listo.</p>
+        <div class="book__chips">
+          {% for s in services.manos[:3] + services.pies[:1] + services.extras %}
+          <a class="chip" href="{{ s.book }}" target="_blank" rel="noopener" data-calendly="{{ s.book }}">{{ s.name }}</a>
+          {% endfor %}
+        </div>
+        <div class="book__ctas">
+          <a class="btn btn--light" href="{{ B.calendly }}" target="_blank" rel="noopener" data-calendly="{{ B.calendly }}">
+            <svg aria-hidden="true"><use href="#i-calendar"/></svg> Ver disponibilidad
+          </a>
+          <a class="btn btn--ghost-light" href="https://wa.me/{{ B.whatsapp }}?text=Hola!%20Quiero%20reservar%20un%20turno." target="_blank" rel="noopener">
+            <svg aria-hidden="true"><use href="#i-whatsapp"/></svg> Por WhatsApp
+          </a>
+        </div>
+      </div>
     </div>
-
   </div>
-
 </section>
 
-<footer class="footer">
-
-  <div class="container footer-grid">
-
-    <div class="footer-brand">
-      <h3>Sheila Navcevich</h3>
-      <p>Diseños profesionales de uñas.</p>
+{# ============================================================ FAQ #}
+<section class="faq section" id="preguntas">
+  <div class="container faq__grid">
+    <header>
+      <p class="eyebrow" data-reveal>Preguntas frecuentes</p>
+      <h2 class="display" data-split>Todo lo que <em>querés saber</em></h2>
+      <p data-reveal>¿Te quedó alguna duda? <a href="https://wa.me/{{ B.whatsapp }}" target="_blank" rel="noopener">Escribime por WhatsApp</a>.</p>
+    </header>
+    <div class="faq__list" data-stagger>
+      <details class="qa">
+        <summary>¿Cómo reservo un turno?<span aria-hidden="true"><svg><use href="#i-plus"/></svg></span></summary>
+        <div class="qa__body"><p>Desde la agenda online: elegís el servicio, el día y el horario disponible. Si preferís, también podés escribirme por WhatsApp.</p></div>
+      </details>
+      <details class="qa">
+        <summary>¿Qué incluye la pedicuría spa?<span aria-hidden="true"><svg><use href="#i-plus"/></svg></span></summary>
+        <div class="qa__body"><p>Limpieza, cutículas y limado, remoción de durezas y piel muerta, exfoliación y un masaje de pies relajante. Todo acompañado de tu café o té con chocolate.</p></div>
+      </details>
+      <details class="qa">
+        <summary>¿El café o té tiene costo?<span aria-hidden="true"><svg><use href="#i-plus"/></svg></span></summary>
+        <div class="qa__body"><p>No, es un regalo. Todos los servicios (excepto la remoción) incluyen café o té a elección con un chocolate.</p></div>
+      </details>
+      <details class="qa">
+        <summary>¿Cómo funciona el Club Serena?<span aria-hidden="true"><svg><use href="#i-plus"/></svg></span></summary>
+        <div class="qa__body"><p>Al sumarte recibís una tarjeta digital con 2 sellos de regalo. Cada servicio suma un sello: en el 5º tenés 25% de descuento y en el 10º, 50%. <a href="{{ url_for('fidelidad') }}">Ver más</a>.</p></div>
+      </details>
+      <details class="qa">
+        <summary>¿Puedo regalar un servicio?<span aria-hidden="true"><svg><use href="#i-plus"/></svg></span></summary>
+        <div class="qa__body"><p>¡Sí! Con nuestras giftcards, personalizadas y en una presentación especial. Escribime por WhatsApp y la preparamos.</p></div>
+      </details>
+      <details class="qa">
+        <summary>¿Hacés diseños personalizados?<span aria-hidden="true"><svg><use href="#i-plus"/></svg></span></summary>
+        <div class="qa__body"><p>Sí, el nail art se suma a cualquier servicio. Podés traer tu idea o una foto de referencia y lo diseñamos juntas.</p></div>
+      </details>
     </div>
+  </div>
+</section>
 
-    <div class="footer-contact">
-
-      <h4>Contacto</h4>
-
-      <div class="footer-icons">
-
-        <a href="https://wa.me/+598097300766" aria-label="whatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
-        </a>
-
-        <a href="https://www.instagram.com/serenanails.uy/" aria-label="Instagram">
-          <i class="fa-brands fa-instagram"></i>
-        </a>
-
-        <a href="mailto:navcevichsh@gmail.com" aria-label="Email">
-          <i class="fa-regular fa-envelope"></i>
-        </a>
-
+{# ============================================================ UBICACIÓN #}
+<section class="location section section--sand" id="ubicacion">
+  <div class="container location__grid">
+    <div class="location__text">
+      <p class="eyebrow" data-reveal>Dónde estamos</p>
+      <h2 class="display" data-split>{{ B.address }}, <em>Paysandú</em></h2>
+      <p class="lead" data-reveal>Te espero con tu café o té listo. Los horarios disponibles los ves siempre actualizados en la agenda online.</p>
+      <div class="location__ctas" data-reveal>
+        <a class="btn" href="{{ B.maps_url }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-pin"/></svg> Cómo llegar</a>
+        <a class="btn btn--outline" href="{{ B.calendly }}" target="_blank" rel="noopener" data-calendly="{{ B.calendly }}">Ver horarios</a>
       </div>
-
     </div>
-
+    <div class="location__map" data-reveal-img>
+      <iframe src="{{ B.maps_embed }}" title="Mapa: {{ B.address_full }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
   </div>
+</section>
 
-  <div class="footer-bottom">
-    <p>© 2026 Serena Nails by BARIT</p>
-  </div>
+{# lightbox #}
+<div class="lightbox" data-lightbox-root hidden>
+  <button type="button" class="lightbox__close" aria-label="Cerrar" data-lightbox-close><svg><use href="#i-close"/></svg></button>
+  <img alt="" data-lightbox-img>
+</div>
+{% endblock %}
 
-</footer>
-
-<script src="/static/js/main.js"></script>
-
-</body>
-</html>
+{% block scripts %}
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+{% endblock %}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}Serena Nails | Manicura y pedicuría en Paysandú{% endblock %}</title>
+  <meta name="description" content="{% block description %}Serena Nails en Paysandú: manicura, kapping gel, soft gel, semipermanente, nail art y pedicuría spa con masajes. Café o té con chocolate de regalo en cada servicio. Reservá tu turno online.{% endblock %}">
+  <meta name="theme-color" content="#4A342A">
+  {% block meta %}
+  <meta property="og:title" content="Serena Nails · Manos y pies en Paysandú">
+  <meta property="og:description" content="Manicura, nail art y pedicuría spa. Tu momento, con café o té y chocolate de regalo.">
+  <meta property="og:image" content="{{ B.url }}{{ url_for('static', filename='img/sheila-espacio.webp') }}">
+  <meta property="og:url" content="{{ B.url }}">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="{{ B.url }}{{ request.path }}">
+  {% endblock %}
+  <link rel="icon" href="{{ url_for('static', filename='sn_favicon.png') }}" sizes="32x32">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+  <link rel="manifest" href="{{ url_for('manifest') }}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+  {% block head %}{% endblock %}
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FTX3RCS6LH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FTX3RCS6LH');
+  </script>
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% include "partials/icons.html" %}
+
+  {% block preloader %}{% endblock %}
+
+  <header class="nav" data-nav>
+    <a class="nav__brand" href="{{ url_for('home') }}" aria-label="Serena Nails, inicio">
+      <img src="{{ url_for('static', filename='img/logo-espresso.png') }}" alt="" width="40" height="36" class="nav__logo nav__logo--dark">
+      <img src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="" width="40" height="36" class="nav__logo nav__logo--light">
+      <span class="nav__name">Serena<em>Nails</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Principal">
+      <a href="{{ url_for('home') }}#servicios">Servicios</a>
+      <a href="{{ url_for('home') }}#experiencia">Experiencia</a>
+      <a href="{{ url_for('home') }}#trabajos">Trabajos</a>
+      <a href="{{ url_for('fidelidad') }}">Club Serena</a>
+      <a href="{{ url_for('home') }}#giftcards">Giftcards</a>
+    </nav>
+    <a class="btn btn--small nav__cta" href="{{ B.calendly }}" target="_blank" rel="noopener">Reservar</a>
+    <button class="nav__burger" type="button" aria-label="Abrir menú" aria-expanded="false" data-menu-toggle>
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <div class="menu" data-menu aria-hidden="true">
+    <div class="menu__bg"></div>
+    <nav class="menu__links" aria-label="Menú">
+      <a href="{{ url_for('home') }}#servicios"><small>01</small>Servicios</a>
+      <a href="{{ url_for('home') }}#experiencia"><small>02</small>La experiencia</a>
+      <a href="{{ url_for('home') }}#trabajos"><small>03</small>Trabajos</a>
+      <a href="{{ url_for('fidelidad') }}"><small>04</small>Club Serena</a>
+      <a href="{{ url_for('home') }}#giftcards"><small>05</small>Giftcards</a>
+      <a href="{{ url_for('home') }}#ubicacion"><small>06</small>Dónde estamos</a>
+    </nav>
+    <div class="menu__foot">
+      <a class="btn btn--light" href="{{ B.calendly }}" target="_blank" rel="noopener">Reservar turno</a>
+      <div class="menu__social">
+        <a href="https://wa.me/{{ B.whatsapp }}" target="_blank" rel="noopener" aria-label="WhatsApp"><svg><use href="#i-whatsapp"/></svg></a>
+        <a href="{{ B.instagram }}" target="_blank" rel="noopener" aria-label="Instagram"><svg><use href="#i-instagram"/></svg></a>
+      </div>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="toasts" data-toasts>
+      {% for cat, msg in messages %}<div class="toast toast--{{ cat }}" role="status">{{ msg }}</div>{% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main id="contenido">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+  <footer class="footer">
+    <div class="footer__marquee" aria-hidden="true">
+      <div class="marquee__track">
+        {% for _ in range(2) %}
+        <span>Tu momento</span><i>✦</i><span class="script">Serena</span><i>✦</i><span>Manos &amp; pies</span><i>✦</i>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <img src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="Serena Nails" width="72" height="65" loading="lazy">
+        <p>Manicura, nail art y pedicuría spa en Paysandú.<br>Un espacio pensado para que disfrutes tu tiempo.</p>
+      </div>
+      <div>
+        <h3>Visitanos</h3>
+        <p><a href="{{ B.maps_url }}" target="_blank" rel="noopener">{{ B.address }}<br>{{ B.city }}, Uruguay</a></p>
+        <p>Horarios según agenda online</p>
+      </div>
+      <div>
+        <h3>Contacto</h3>
+        <p><a href="https://wa.me/{{ B.whatsapp }}" target="_blank" rel="noopener">WhatsApp {{ B.phone_display }}</a></p>
+        <p><a href="{{ B.instagram }}" target="_blank" rel="noopener">{{ B.instagram_handle }}</a></p>
+        <p><a href="mailto:{{ B.email }}">{{ B.email }}</a></p>
+      </div>
+      <div>
+        <h3>Explorá</h3>
+        <p><a href="{{ url_for('home') }}#servicios">Servicios y precios</a></p>
+        <p><a href="{{ url_for('fidelidad') }}">Club Serena</a></p>
+        <p><a href="{{ url_for('home') }}#giftcards">Giftcards</a></p>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© {{ year }} Serena Nails · {{ B.owner }}</span>
+      <span>Hecho con amor por BARIT</span>
+    </div>
+  </footer>
+  {% endblock %}
+
+  {% block mobile_bar %}
+  <div class="dock" data-dock>
+    <a class="dock__book" href="{{ B.calendly }}" target="_blank" rel="noopener">
+      <svg aria-hidden="true"><use href="#i-calendar"/></svg> Reservar turno
+    </a>
+    <a class="dock__wa" href="https://wa.me/{{ B.whatsapp }}?text=Hola%20Sheila!%20Quiero%20consultar%20por%20un%20turno." target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+      <svg aria-hidden="true"><use href="#i-whatsapp"/></svg>
+    </a>
+  </div>
+  {% endblock %}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js" defer></script>
+  <script src="{{ asset('js/main.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
