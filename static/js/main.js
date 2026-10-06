@@ -154,15 +154,19 @@
     });
   }
 
-  /* ------------------------------------------------ contador de precios */
+  /* ------------------------------------------------ precios: bajan hasta el valor real (900 arranca en 1.000) */
+  const money = (v) => "$" + Math.round(v).toLocaleString("es-UY");
+  const priceFrom = (end) => Math.ceil(end / 100) * 100 + 100;
+  if (motion) $$("[data-count]").forEach((el) => { el.textContent = money(priceFrom(+el.dataset.count)); });
   function countUp(els) {
     if (!motion) return;
     els.forEach((el) => {
       const end = +el.dataset.count;
-      const obj = { v: end * 0.55 };
+      const obj = { v: priceFrom(end) };
+      el.textContent = money(obj.v);
       gsap.to(obj, {
-        v: end, duration: 1.4, ease: "expo.out",
-        onUpdate: () => { el.textContent = "$" + Math.round(obj.v).toLocaleString("es-UY"); },
+        v: end, duration: 1.8, delay: 0.35, ease: "power3.inOut",
+        onUpdate: () => { el.textContent = money(obj.v); },
       });
     });
   }
