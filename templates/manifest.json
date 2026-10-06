@@ -1,4 +1,17 @@
-{
+{% if request.args.get('app') == 'panel' %}{
+  "name": "Sellos · Club Serena",
+  "short_name": "Sellos Serena",
+  "description": "Escáner de tarjetas del Club Serena",
+  "start_url": "/admin/escanear",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#2C1F19",
+  "theme_color": "#2C1F19",
+  "icons": [
+    {"src": "{{ url_for('static', filename='icons/icon-192.png') }}", "sizes": "192x192", "type": "image/png"},
+    {"src": "{{ url_for('static', filename='icons/icon-512.png') }}", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}{% else %}{
   "name": "Serena Nails",
   "short_name": "Serena",
   "description": "Manicura y pedicuría en Paysandú · Club Serena",
@@ -11,4 +24,4 @@
     {"src": "{{ url_for('static', filename='icons/icon-192.png') }}", "sizes": "192x192", "type": "image/png"},
     {"src": "{{ url_for('static', filename='icons/icon-512.png') }}", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
-}
+}{% endif %}

@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Clientas · Panel Serena{% endblock %}
 {% block meta %}<meta name="robots" content="noindex">{% endblock %}
+{% block manifest %}
+<link rel="manifest" href="{{ url_for('manifest', app='panel') }}">
+<meta name="apple-mobile-web-app-title" content="Sellos Serena">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+{% endblock %}
 {% block body_class %}page-admin{% endblock %}
 {% block footer %}{% endblock %}
 {% block mobile_bar %}{% endblock %}
