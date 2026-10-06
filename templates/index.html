@@ -60,8 +60,8 @@
   <div class="hero__content">
     <p class="eyebrow eyebrow--light" data-hero-item>Paysandú · Manos &amp; pies</p>
     <h1 class="hero__title" aria-label="Serena Nails">
-      <span class="hero__script" data-hero-item>Serena</span>
-      <span class="hero__caps" data-hero-item>N&nbsp;A&nbsp;I&nbsp;L&nbsp;S</span>
+      <img class="hero__logo" data-hero-item src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="" width="400" height="361">
+      <span class="hero__brand" data-hero-item>SERENA NAILS</span>
     </h1>
     <p class="hero__lead" data-hero-item>
       Manicura, nail art y <strong>pedicuría spa</strong>, con un café o té y chocolate de regalo.
@@ -75,9 +75,6 @@
     </div>
   </div>
 
-  <a class="hero__scroll" href="#sobre-mi" aria-label="Bajar">
-    <span>Scroll</span><i></i>
-  </a>
   <div class="hero__dots" data-slide-dots aria-hidden="true"></div>
 </section>
 
@@ -226,6 +223,26 @@
   </div>
 </section>
 
+{# ============================================================ CLUB SERENA #}
+<section class="club section section--dark" id="club">
+  <div class="container club__grid">
+    <div class="club__text">
+      <p class="eyebrow eyebrow--light" data-reveal>Programa de fidelidad</p>
+      <h2 class="display display--light club__title" data-split>Club <span class="brand">SERENA</span></h2>
+      <p class="lead" data-reveal>Tu tarjeta digital de sellos, siempre en tu celular. Cada servicio suma, y los premios llegan rápido.</p>
+      <ol class="club__steps" data-stagger>
+        <li><span>2</span><div><strong>Te regalamos 2 sellos</strong>Al sumarte, tu tarjeta ya arranca con los dos primeros servicios.</div></li>
+        <li><span>5</span><div><strong>25% OFF</strong>En tu 5º servicio.</div></li>
+        <li><span>10</span><div><strong>50% OFF</strong>En tu 10º servicio. ¡Y empezás una tarjeta nueva!</div></li>
+      </ol>
+      <a class="btn btn--light" href="{{ url_for('fidelidad') }}" data-reveal>Conocé el Club <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </div>
+    <div class="club__card" data-club-card>
+      {% with card_name='Tu nombre', card_stamps=0, card_demo=True %}{% include "partials/loyalty_card.html" %}{% endwith %}
+    </div>
+  </div>
+</section>
+
 {# ============================================================ ESPACIO #}
 <section class="space section section--sand" id="espacio">
   <div class="container space__grid">
@@ -301,26 +318,6 @@
     </ul>
   </div>
   <div class="works__progress" aria-hidden="true"><span data-works-progress></span></div>
-</section>
-
-{# ============================================================ CLUB SERENA #}
-<section class="club section section--dark" id="club">
-  <div class="container club__grid">
-    <div class="club__text">
-      <p class="eyebrow eyebrow--light" data-reveal>Programa de fidelidad</p>
-      <h2 class="display display--light" data-split>Club <em>Serena</em></h2>
-      <p class="lead" data-reveal>Tu tarjeta digital de sellos, siempre en tu celular. Cada servicio suma, y los premios llegan rápido.</p>
-      <ol class="club__steps" data-stagger>
-        <li><span>2</span><div><strong>Te regalamos 2 sellos</strong>Al sumarte, tu tarjeta ya arranca con los dos primeros servicios.</div></li>
-        <li><span>5</span><div><strong>25% OFF</strong>En tu 5º servicio.</div></li>
-        <li><span>10</span><div><strong>50% OFF</strong>En tu 10º servicio. ¡Y empezás una tarjeta nueva!</div></li>
-      </ol>
-      <a class="btn btn--light" href="{{ url_for('fidelidad') }}" data-reveal>Conocé el Club <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    </div>
-    <div class="club__card" data-club-card>
-      {% with card_name='Tu nombre', card_stamps=0, card_demo=True %}{% include "partials/loyalty_card.html" %}{% endwith %}
-    </div>
-  </div>
 </section>
 
 {# ============================================================ GIFTCARDS #}

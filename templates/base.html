@@ -20,7 +20,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Belleza&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('css/main.css') }}">
   {% block head %}{% endblock %}
 
@@ -43,7 +43,7 @@
     <a class="nav__brand" href="{{ url_for('home') }}" aria-label="Serena Nails, inicio">
       <img src="{{ url_for('static', filename='img/logo-espresso.png') }}" alt="" width="40" height="36" class="nav__logo nav__logo--dark">
       <img src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="" width="40" height="36" class="nav__logo nav__logo--light">
-      <span class="nav__name">Serena<em>Nails</em></span>
+      <span class="nav__name">Serena Nails</span>
     </a>
     <nav class="nav__links" aria-label="Principal">
       <a href="{{ url_for('home') }}#servicios">Servicios</a>
@@ -94,7 +94,7 @@
     <div class="footer__marquee" aria-hidden="true">
       <div class="marquee__track">
         {% for _ in range(2) %}
-        <span>Tu momento</span><i>✦</i><span class="script">Serena</span><i>✦</i><span>Manos &amp; pies</span><i>✦</i>
+        <span>Tu momento</span><i>✦</i><span class="brand">SERENA</span><i>✦</i><span>Manos &amp; pies</span><i>✦</i>
         {% endfor %}
       </div>
     </div>

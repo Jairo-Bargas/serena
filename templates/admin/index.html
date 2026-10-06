@@ -11,7 +11,7 @@
     <div class="admin__top">
       <div>
         <p class="eyebrow">Panel</p>
-        <h1 class="admin__title">Club <em>Serena</em></h1>
+        <h1 class="admin__title">Club <span class="brand">Serena</span></h1>
       </div>
       <form method="post" action="{{ url_for('admin_logout') }}">
         <input type="hidden" name="csrf" value="{{ csrf_token() }}">
@@ -24,6 +24,8 @@
       <div><strong>{{ stats.visits_month }}</strong><span>sellos este mes</span></div>
       <div><strong>{{ stats.rewards_soon }}</strong><span>con descuento en la próxima</span></div>
     </div>
+
+    <a class="btn admin__scan" href="{{ url_for('admin_scan') }}"><svg aria-hidden="true"><use href="#i-qr"/></svg> Escanear tarjeta y sumar sello</a>
 
     <details class="admin__new" {% if not stats.clients %}open{% endif %}>
       <summary><svg aria-hidden="true"><use href="#i-plus"/></svg> Nueva clienta</summary>
@@ -59,7 +61,7 @@
       {% endfor %}
     </ul>
 
-    <p class="admin-box__muted admin__tip">Tip: escaneá el QR de la tarjeta de una clienta con la cámara del celular (con este panel abierto en el mismo navegador) y vas directo a sumarle el sello.</p>
+    <p class="admin-box__muted admin__tip">Tip: guardá el escáner en la pantalla de inicio de tu celular. Lo abrís, apuntás al QR de la clienta y el sello se suma solo.</p>
   </div>
 </section>
 {% endblock %}

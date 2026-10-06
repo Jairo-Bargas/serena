@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Escanear · Panel Serena{% endblock %}
+{% block meta %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}page-scan{% endblock %}
+{% block footer %}{% endblock %}
+{% block mobile_bar %}{% endblock %}
+
+{% block content %}
+<section class="scan" data-scan data-csrf="{{ csrf_token() }}" data-api="{{ url_for('api_add_stamp') }}" data-visit-api="{{ url_for('api_update_visit', visit_id=0) }}">
+  <div class="scan__top">
+    <a href="{{ url_for('admin') }}" class="scan__back" aria-label="Volver al panel"><svg><use href="#i-arrow"/></svg></a>
+    <div>
+      <p class="eyebrow eyebrow--light">Club <span class="brand">Serena</span></p>
+      <h1>Escaneá la tarjeta</h1>
+    </div>
+  </div>
+
+  <div class="scan__cam">
+    <div id="reader" class="scan__reader"></div>
+    <div class="scan__frame" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="scan__laser"></span></div>
+    <p class="scan__msg" data-scan-msg>Activando la cámara…</p>
+  </div>
+  <p class="scan__hint">Apuntá al QR de la tarjeta de la clienta. El sello se suma solo.</p>
+  <a class="scan__manual" href="{{ url_for('admin') }}">Buscar por nombre</a>
+
+  {# resultado #}
+  <div class="sheet" data-sheet hidden>
+    <div class="sheet__body" data-sheet-body></div>
+  </div>
+</section>
+
+<template data-tpl-result>
+  <div class="res">
+    <div class="res__burst" aria-hidden="true"></div>
+    <span class="res__avatar" data-f="initial"></span>
+    <p class="res__name" data-f="name"></p>
+    <p class="res__stamp">Sello <strong data-f="stamp"></strong> de {{ LOYALTY.total }}</p>
+    <ol class="res__dots" data-f="dots"></ol>
+    <div class="res__reward" data-f="reward" hidden></div>
+    <p class="res__next" data-f="next"></p>
+    <p class="res__label">¿Qué servicio se hizo? <small>(opcional)</small></p>
+    <div class="res__chips" data-f="chips">
+      {% for s in services %}<button type="button" class="chip-s" data-service="{{ s }}">{{ s }}</button>{% endfor %}
+    </div>
+    <div class="res__actions">
+      <button type="button" class="btn btn--outline btn--small" data-act="undo">Deshacer</button>
+      <a class="btn btn--outline btn--small" data-f="card" href="#">Ver tarjeta</a>
+    </div>
+    <button type="button" class="btn res__again" data-act="again"><svg aria-hidden="true"><use href="#i-qr"/></svg> Escanear otra</button>
+  </div>
+</template>
+
+<template data-tpl-confirm>
+  <div class="res">
+    <span class="res__avatar res__avatar--warn">!</span>
+    <p class="res__name" data-f="name"></p>
+    <p class="res__next">Ya le sumaste un sello hace <strong data-f="minutes"></strong>. ¿Querés sumar otro?</p>
+    <div class="res__actions res__actions--stack">
+      <button type="button" class="btn" data-act="force">Sí, sumar otro sello</button>
+      <button type="button" class="btn btn--outline" data-act="again">No, cancelar</button>
+    </div>
+  </div>
+</template>
+
+<template data-tpl-error>
+  <div class="res">
+    <span class="res__avatar res__avatar--warn">?</span>
+    <p class="res__next" data-f="msg"></p>
+    <button type="button" class="btn res__again" data-act="again">Escanear de nuevo</button>
+  </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{{ asset('js/scan.js') }}"></script>
+{% endblock %}

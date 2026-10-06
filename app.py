@@ -6,7 +6,9 @@ from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
 
-from flask import (Flask, abort, flash, redirect, render_template, request,
+from datetime import timedelta
+
+from flask import (Flask, abort, flash, jsonify, redirect, render_template, request,
                    send_from_directory, session, url_for)
 from flask_sqlalchemy import SQLAlchemy
 
@@ -155,7 +157,7 @@ def csrf_token():
 @app.before_request
 def check_csrf():
     if request.method == "POST":
-        sent = request.form.get("csrf")
+        sent = request.form.get("csrf") or request.headers.get("X-CSRF")
         if not sent or not secrets.compare_digest(sent, session.get("csrf", "")):
             abort(400)
 
@@ -218,6 +220,17 @@ def tarjeta(token):
         services=content.LOYALTY_SERVICE_CHOICES,
         card_url=url_for("tarjeta", token=token, _external=True),
     )
+
+
+@app.route("/tarjeta/<token>/estado")
+def tarjeta_estado(token):
+    """Lo consulta la tarjeta de la clienta cada pocos segundos para enterarse de sellos nuevos."""
+    client = Client.query.filter_by(token=token).first_or_404()
+    last = client.visits[0] if client.visits else None
+    resp = jsonify(stamps=client.stamps, cards=client.cards_completed, last_visit=last.id if last else None,
+                   last_stamp=last.stamp_number if last else None, last_discount=last.discount if last else 0)
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 @app.route("/manifest.webmanifest")
@@ -343,6 +356,63 @@ def admin_delete_client(client_id):
     db.session.commit()
     flash("Clienta eliminada.", "info")
     return redirect(url_for("admin"))
+
+
+# ---------------------------------------------------------------- escáner (API JSON)
+
+DUPLICATE_WINDOW = timedelta(hours=3)
+
+
+def client_json(client, visit=None):
+    nxt = client.next_reward
+    return {
+        "id": client.id, "name": client.name, "first_name": client.first_name, "token": client.token,
+        "stamps": client.stamps, "total": content.LOYALTY["total"], "cards": client.cards_completed,
+        "next_reward": {"stamp": nxt[0], "pct": nxt[1]} if nxt else None,
+        "visit": {"id": visit.id, "stamp": visit.stamp_number, "discount": visit.discount,
+                  "service": visit.service} if visit else None,
+        "card_url": url_for("tarjeta", token=client.token),
+    }
+
+
+@app.route("/admin/escanear")
+@admin_required
+def admin_scan():
+    return render_template("admin/scan.html", services=content.LOYALTY_SERVICE_CHOICES)
+
+
+@app.route("/admin/api/sello", methods=["POST"])
+@admin_required
+def api_add_stamp():
+    data = request.get_json(silent=True) or {}
+    token = (data.get("token") or "").strip()
+    client = Client.query.filter_by(token=token).first()
+    if not client:
+        return jsonify(error="No encontré esa tarjeta. ¿Es un QR del Club Serena?"), 404
+    last = client.visits[0] if client.visits else None
+    if last and not data.get("force"):
+        created = last.created_at if last.created_at.tzinfo else last.created_at.replace(tzinfo=timezone.utc)
+        ago = utcnow() - created
+        if ago < DUPLICATE_WINDOW:
+            return jsonify(confirm=True, minutes=int(ago.total_seconds() // 60), client=client_json(client)), 409
+    visit = register_visit(client, (data.get("service") or "Servicio")[:120])
+    return jsonify(ok=True, client=client_json(client, visit))
+
+
+@app.route("/admin/api/visita/<int:visit_id>", methods=["POST"])
+@admin_required
+def api_update_visit(visit_id):
+    visit = db.get_or_404(Visit, visit_id)
+    data = request.get_json(silent=True) or {}
+    if data.get("undo"):
+        client = visit.client
+        if client.visits and client.visits[0].id == visit.id:
+            undo_last_visit(client)
+            return jsonify(ok=True, client=client_json(client))
+        return jsonify(error="Solo se puede deshacer el último sello."), 400
+    visit.service = (data.get("service") or visit.service)[:120]
+    db.session.commit()
+    return jsonify(ok=True)
 
 
 @app.errorhandler(404)

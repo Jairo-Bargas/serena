@@ -129,5 +129,47 @@
     new QRCode(el, { text: el.dataset.qr, width: 132, height: 132, colorDark: "#4A342A", colorLight: "#FBF8F3", correctLevel: QRCode.CorrectLevel.M });
     el.removeAttribute("title");
   });
+
+  // Tarjeta en vivo: cuando Sheila escanea el QR, la tarjeta de la clienta lo festeja sola.
+  (() => {
+    const url = {{ url_for('tarjeta_estado', token=client.token) | tojson }};
+    const logo = {{ url_for('static', filename='img/logo-linen.png') | tojson }};
+    let last = {{ (client.visits[0].id if client.visits else None) | tojson }};
+    const celebrate = (s) => {
+      const box = document.createElement("div");
+      box.className = "celebrate";
+      const reward = s.last_discount ? `<span class="celebrate__reward">${s.last_discount}% OFF</span><p>¡En este servicio tenés descuento!</p>` : "<p>Gracias por volver 💛</p>";
+      box.innerHTML = `<div class="celebrate__box"><div class="celebrate__stamp"><img src="${logo}" alt=""></div>
+        <h2>¡Sello ${s.last_stamp}!</h2>${reward}<button class="btn" type="button">Ver mi tarjeta</button></div>`;
+      const conf = document.createElement("div");
+      conf.className = "confetti";
+      const colors = ["#B2967D", "#7D5A44", "#D7C9B8", "#E9D6CB", "#4A342A"];
+      for (let i = 0; i < 60; i++) {
+        const c = document.createElement("i");
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.background = colors[i % colors.length];
+        c.style.animationDuration = 1.8 + Math.random() * 1.6 + "s";
+        c.style.animationDelay = Math.random() * 0.5 + "s";
+        conf.append(c);
+      }
+      document.body.append(box, conf);
+      navigator.vibrate?.([60, 40, 120]);
+      box.querySelector("button").addEventListener("click", () => location.reload());
+      setTimeout(() => location.reload(), 9000);
+    };
+    const check = async () => {
+      if (document.hidden) return;
+      try {
+        const s = await (await fetch(url, { cache: "no-store" })).json();
+        if (s.last_visit !== last) {
+          const added = s.last_visit && (last === null || s.last_visit > last);
+          last = s.last_visit;
+          added ? celebrate(s) : location.reload();
+        }
+      } catch (_) { /* sin conexión: reintenta */ }
+    };
+    setInterval(check, 4000);
+    document.addEventListener("visibilitychange", check);
+  })();
 </script>
 {% endblock %}
