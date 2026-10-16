@@ -90,7 +90,9 @@ SERVICES = {
 }
 
 # Servicios que se pueden registrar en la tarjeta de fidelización (panel admin).
-LOYALTY_SERVICE_CHOICES = [s["name"] for group in ("manos", "pies") for s in SERVICES[group]] + ["Otro"]
+# El diseño personalizado se suma a otro servicio, así que no cuenta como sello propio.
+LOYALTY_SERVICE_CHOICES = [s["name"] for group in ("manos", "pies") for s in SERVICES[group]
+                           if s["slug"] != "diseno-personalizado"] + ["Otro"]
 
 LOYALTY = {
     "prefix": "Club",     # nombre del programa: "<prefix> Serena" (p. ej. "Club", "Círculo", "Mimos")
