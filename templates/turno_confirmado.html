@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Turno reservado · Serena Nails{% endblock %}
+{% block meta %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}page-card{% endblock %}
+{% block mobile_bar %}{% endblock %}
+
+{% block content %}
+<section class="card-page booked">
+  <div class="card-page__inner">
+    <div class="booked__check" aria-hidden="true"><svg><use href="#i-check"/></svg></div>
+    <h1 class="card-page__hello">¡Turno reservado{% if name %}, <em>{{ name.split()[0] }}</em>{% endif %}!</h1>
+
+    {% if service or when %}
+    <div class="booked__detail">
+      {% if service %}<p><span>Servicio</span><strong>{{ service }}</strong></p>{% endif %}
+      {% if when %}<p><span>Día y hora</span><strong>{{ when }}</strong></p>{% endif %}
+      <p><span>Dónde</span><strong>{{ B.address }}, {{ B.city }}</strong></p>
+    </div>
+    {% endif %}
+
+    {% if pay.account %}
+    <div class="booked__pay">
+      <h2>Datos para transferir</h2>
+      {% if pay.note %}<p class="booked__note">{{ pay.note }}</p>{% endif %}
+      <dl>
+        {% if pay.bank %}<div><dt>Banco</dt><dd>{{ pay.bank }}</dd></div>{% endif %}
+        {% if pay.account_type %}<div><dt>Tipo</dt><dd>{{ pay.account_type }}</dd></div>{% endif %}
+        <div><dt>Cuenta</dt><dd><span data-copy-src>{{ pay.account }}</span>
+          <button type="button" class="booked__copy" data-copy>Copiar</button></dd></div>
+        {% if pay.holder %}<div><dt>Titular</dt><dd>{{ pay.holder }}</dd></div>{% endif %}
+      </dl>
+    </div>
+    {% endif %}
+
+    <a class="btn booked__wa" href="https://wa.me/{{ B.whatsapp }}?text={{ wa_text | urlencode }}" target="_blank" rel="noopener">
+      <svg aria-hidden="true"><use href="#i-whatsapp"/></svg>
+      {% if pay.account %}Enviar comprobante por WhatsApp{% else %}Escribirle a Sheila{% endif %}
+    </a>
+    <p class="booked__hint">Te llega un mail de Calendly con la confirmación y el link para reprogramar o cancelar.</p>
+
+    <a class="booked__club" href="{{ url_for('fidelidad') }}">
+      <svg aria-hidden="true"><use href="#i-card"/></svg>
+      <span><strong>{{ LOYALTY.prefix }} Serena</strong>Pedile a Sheila tu tarjeta de sellos: arrancás con {{ LOYALTY.welcome }} de bienvenida.</span>
+    </a>
+    <a class="card-page__home" href="{{ url_for('home') }}">Volver a serenanailsuy.com</a>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+    const text = b.parentElement.querySelector("[data-copy-src]").textContent.trim();
+    try { await navigator.clipboard.writeText(text); b.textContent = "¡Copiado!"; }
+    catch (_) { getSelection().selectAllChildren(b.parentElement.querySelector("[data-copy-src]")); }
+  }));
+</script>
+{% endblock %}

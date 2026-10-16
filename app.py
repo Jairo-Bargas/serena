@@ -283,6 +283,31 @@ def home():
     )
 
 
+@app.route("/turno-confirmado")
+def turno_confirmado():
+    """Calendly redirige acá después de reservar ("Pass event details to your redirected page")."""
+    args = request.args
+    name = (args.get("invitee_full_name") or "").strip()[:80]
+    service = (args.get("event_type_name") or "").strip()[:80]
+    start = None
+    raw = args.get("event_start_time")
+    if raw:
+        try:
+            start = datetime.fromisoformat(raw.replace("Z", "+00:00")).astimezone(timezone(timedelta(hours=-3)))
+        except ValueError:
+            start = None
+    dias = "lunes martes miércoles jueves viernes sábado domingo".split()
+    meses = "enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split()
+    when_long = f"{dias[start.weekday()]} {start.day} de {meses[start.month - 1]}, {start:%H:%M} hs" if start else ""
+    when_short = f"{dias[start.weekday()]} {start:%d/%m} a las {start:%H:%M}" if start else ""
+    msg = "Hola Sheila! " + (f"Soy {name.split()[0]}. " if name else "") + "Reservé un turno"
+    msg += (f" de {service}" if service else "") + (f" para el {when_short}" if when_short else "") + "."
+    if content.PAYMENT["account"]:
+        msg += " Te mando el comprobante de la transferencia."
+    return render_template("turno_confirmado.html", name=name, service=service, when=when_long,
+                           wa_text=msg, pay=content.PAYMENT)
+
+
 @app.route("/fidelidad")
 def fidelidad():
     return render_template("fidelidad.html")
