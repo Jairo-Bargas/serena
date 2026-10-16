@@ -15,7 +15,7 @@
     <h1 class="card-page__hello">Hola, <em>{{ client.first_name }}</em></h1>
 
     <div class="card-page__card">
-      {% with card_name=client.name, card_stamps=client.stamps, card_demo=False, card_code='N° ' ~ ('%04d' % client.id) %}{% include "partials/loyalty_card.html" %}{% endwith %}
+      {% with card_name=client.name, card_stamps=client.stamps, card_demo=False %}{% include "partials/loyalty_card.html" %}{% endwith %}
     </div>
 
     <div class="card-status">
