@@ -28,7 +28,7 @@ Recomendación para videos: verticales, de 6 a 10 segundos, sin audio, de menos 
 
 | Variable | Para qué |
 |---|---|
-| `DATABASE_URL` | **Obligatoria en producción.** URL de Postgres (Render Postgres o Neon). Sin esto, las tarjetas se guardan en un SQLite que Render borra en cada deploy. |
+| `DATABASE_URL` | **Obligatoria en producción.** `sqlite:////var/data/serena.db` (SQLite en el disco permanente de Render, montado en `/var/data`). También acepta una URL de Postgres. Sin esto, las tarjetas se guardan en un archivo que Render borra en cada deploy. |
 | `SECRET_KEY` | Cadena larga y aleatoria para firmar la sesión del panel. |
 | `ADMIN_PASSWORD` | Contraseña del panel `/admin` de Sheila. |
 

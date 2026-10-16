@@ -31,8 +31,25 @@ elif db_url.startswith("postgresql://"):
     db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
+IS_SQLITE = db_url.startswith("sqlite")
+if IS_SQLITE:
+    # En Render la base vive en el disco permanente (p. ej. sqlite:////var/data/serena.db)
+    Path(db_url.split("sqlite:///", 1)[1]).parent.mkdir(parents=True, exist_ok=True)
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"]["connect_args"] = {"timeout": 15}
 
 db = SQLAlchemy(app)
+
+if IS_SQLITE:
+    from sqlalchemy import event
+
+    with app.app_context():
+        @event.listens_for(db.engine, "connect")
+        def _sqlite_pragmas(conn, _record):
+            cur = conn.cursor()
+            cur.execute("PRAGMA journal_mode=WAL")   # lecturas y escrituras a la vez sin bloquearse
+            cur.execute("PRAGMA busy_timeout=15000")
+            cur.execute("PRAGMA foreign_keys=ON")
+            cur.close()
 
 
 def utcnow():
