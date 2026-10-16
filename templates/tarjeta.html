@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Tarjeta de {{ client.first_name }} · Club Serena{% endblock %}
+{% block title %}Tarjeta de {{ client.first_name }} · {{ LOYALTY.prefix }} Serena{% endblock %}
 {% block meta %}<meta name="robots" content="noindex">{% endblock %}
 {% block body_class %}page-card{% endblock %}
 {% block footer %}{% endblock %}
@@ -11,7 +11,7 @@
 {% set last = client.visits[0] if client.visits else None %}
 <section class="card-page">
   <div class="card-page__inner">
-    <p class="eyebrow">Club Serena</p>
+    <p class="eyebrow">{{ LOYALTY.prefix }} Serena</p>
     <h1 class="card-page__hello">Hola, <em>{{ client.first_name }}</em></h1>
 
     <div class="card-page__card">
@@ -53,7 +53,7 @@
         <button class="btn" type="submit"><svg aria-hidden="true"><use href="#i-plus"/></svg> Sumar sello {{ client.stamps + 1 }}</button>
       </form>
       <div class="admin-box__row">
-        <a class="btn btn--outline btn--small" href="https://wa.me/598{{ client.phone }}?text={{ ('Hola ' ~ client.first_name ~ '! Esta es tu tarjeta del Club Serena 💅 Guardala en tu celular: ' ~ card_url) | urlencode }}" target="_blank" rel="noopener">
+        <a class="btn btn--outline btn--small" href="https://wa.me/598{{ client.phone }}?text={{ ('Hola ' ~ client.first_name ~ '! Esta es tu tarjeta del ' ~ LOYALTY.prefix ~ ' Serena 💅 Guardala en tu celular: ' ~ card_url) | urlencode }}" target="_blank" rel="noopener">
           <svg aria-hidden="true"><use href="#i-whatsapp"/></svg> Enviar por WhatsApp
         </a>
         <form method="post" action="{{ url_for('admin_undo_stamp', client_id=client.id) }}" onsubmit="return confirm('¿Deshacer el último sello?')">
@@ -87,7 +87,7 @@
     </div>
 
     <div class="card-actions">
-      <button type="button" class="btn btn--outline" data-share="{{ card_url }}" data-share-title="Mi tarjeta Club Serena">
+      <button type="button" class="btn btn--outline" data-share="{{ card_url }}" data-share-title="Mi tarjeta {{ LOYALTY.prefix }} Serena">
         <svg aria-hidden="true"><use href="#i-share"/></svg> <span>Guardar / compartir link</span>
       </button>
       <a class="btn" href="{{ B.calendly }}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-calendar"/></svg> Reservar turno</a>

@@ -26,6 +26,15 @@ BUSINESS = {
 SERVICES = {
     "manos": [
         {
+            "slug": "semipermanente",
+            "name": "Semipermanente",
+            "tagline": "Color, brillo y duración",
+            "desc": "Esmaltado que se mantiene impecable por semanas, con brillo espejo y sin descascararse.",
+            "price": 650,
+            "includes": ["Preparación y cutículas", "Esmaltado semipermanente", "Brillo de larga duración"],
+            "book": "https://calendly.com/serena-nails/semipermanente",
+        },
+        {
             "slug": "kapping",
             "name": "Kapping gel",
             "tagline": "Refuerzo sobre la uña natural",
@@ -45,52 +54,26 @@ SERVICES = {
             "featured": True,
         },
         {
-            "slug": "semipermanente",
-            "name": "Semipermanente",
-            "tagline": "Color, brillo y duración",
-            "desc": "Esmaltado que se mantiene impecable por semanas, con brillo espejo y sin descascararse.",
-            "price": 650,
-            "includes": ["Preparación y cutículas", "Esmaltado semipermanente", "Brillo de larga duración"],
-            "book": "https://calendly.com/serena-nails/semipermanente",
-        },
-        {
-            "slug": "nail-art",
-            "name": "Nail art",
-            "tagline": "Diseños a tu medida",
-            "desc": "Diseños delicados y personalizados para sumar a cualquier servicio. Traé tu idea o creamos una juntas.",
+            "slug": "diseno-personalizado",
+            "name": "Diseño personalizado",
+            "tagline": "Delicado y a tu medida",
+            "desc": "Mandame una foto de referencia antes de tu turno y te aviso el precio del diseño.",
             "price": None,
-            "includes": ["Diseño personalizado", "Se suma a cualquier servicio"],
-            "book": "https://calendly.com/serena-nails",
+            "includes": ["Se suma a tu servicio", "Foto de referencia previa"],
+            "book": "https://wa.me/59897300766?text=Hola%20Sheila!%20Te%20mando%20una%20foto%20del%20dise%C3%B1o%20que%20quiero.",
+            "cta": "Enviar foto",
         },
     ],
     "pies": [
         {
-            "slug": "pedicuria-spa",
-            "name": "Pedicuría spa",
-            "tagline": "Un ritual completo para tus pies",
-            "desc": "Limpieza profunda, remoción de durezas y callosidades, exfoliación y un masaje relajante para que salgas caminando en las nubes.",
+            "slug": "pedicura-spa",
+            "name": "Pedicura spa",
+            "tagline": "",
+            "desc": "Un tratamiento completo para cuidar, embellecer y renovar tus pies.",
             "price": 1200,
-            "includes": ["Remoción de durezas y piel muerta", "Exfoliación", "Masaje de pies", "Cutículas y limado"],
+            "includes": ["Limado de uñas", "Esmaltado", "Remoción de durezas", "Exfoliación e hidratación"],
             "book": "https://calendly.com/serena-nails",
             "featured": True,
-        },
-        {
-            "slug": "semipermanente-pies",
-            "name": "Semipermanente en pies",
-            "tagline": "Color que dura",
-            "desc": "Esmaltado semipermanente en los pies con brillo y duración, ideal para todo el año.",
-            "price": None,
-            "includes": ["Preparación", "Esmaltado semipermanente", "Masaje de pies"],
-            "book": "https://calendly.com/serena-nails",
-        },
-        {
-            "slug": "kapping-pies",
-            "name": "Kapping en pies",
-            "tagline": "Refuerzo y prolijidad",
-            "desc": "Refuerzo en gel sobre la uña natural del pie, para uñas más firmes y parejas.",
-            "price": None,
-            "includes": ["Preparación", "Refuerzo en gel", "Masaje de pies"],
-            "book": "https://calendly.com/serena-nails",
         },
     ],
     "extras": [
@@ -99,7 +82,7 @@ SERVICES = {
             "name": "Remoción",
             "tagline": "Retiro cuidadoso del material",
             "desc": "Retiramos el material sin dañar tu uña natural.",
-            "price": None,
+            "price": 200,
             "includes": [],
             "book": "https://calendly.com/serena-nails/remocion",
         },
@@ -110,13 +93,14 @@ SERVICES = {
 LOYALTY_SERVICE_CHOICES = [s["name"] for group in ("manos", "pies") for s in SERVICES[group]] + ["Otro"]
 
 LOYALTY = {
+    "prefix": "Club",     # nombre del programa: "<prefix> Serena" (p. ej. "Club", "Círculo", "Mimos")
     "total": 10,          # sellos por tarjeta
-    "welcome": 2,         # sellos de regalo para clientas nuevas
+    "welcome": 2,         # sellos de bienvenida para clientas nuevas
     "rewards": {5: 25, 10: 50},  # n° de sello -> % de descuento en ese servicio
 }
 
 GALLERY = [
-    {"src": "img/trabajo-1.webp", "sm": "img/trabajo-1-sm.webp", "alt": "Uñas blancas con detalle de nail art"},
+    {"src": "img/trabajo-1.webp", "sm": "img/trabajo-1-sm.webp", "alt": "Uñas blancas con diseño delicado"},
     {"src": "img/trabajo-2.webp", "sm": "img/trabajo-2-sm.webp", "alt": "Uñas nude con línea francesa fina"},
     {"src": "img/trabajo-3.webp", "sm": "img/trabajo-3-sm.webp", "alt": "Francesa en celeste con detalles"},
     {"src": "img/trabajo-4.webp", "sm": "img/trabajo-4-sm.webp", "alt": "Uñas cortas en rosa suave"},

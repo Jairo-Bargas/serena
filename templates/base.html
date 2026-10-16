@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{% block title %}Serena Nails | Manicura y pedicuría en Paysandú{% endblock %}</title>
-  <meta name="description" content="{% block description %}Serena Nails en Paysandú: manicura, kapping gel, soft gel, semipermanente, nail art y pedicuría spa con masajes. Café o té con chocolate de regalo en cada servicio. Reservá tu turno online.{% endblock %}">
+  <title>{% block title %}Serena Nails | Manicura y pedicura spa en Paysandú{% endblock %}</title>
+  <meta name="description" content="{% block description %}Serena Nails en Paysandú: manicura, semipermanente, kapping gel, soft gel, diseños personalizados y pedicura spa. Reservá tu turno online.{% endblock %}">
   <meta name="theme-color" content="#4A342A">
   {% block meta %}
   <meta property="og:title" content="Serena Nails · Manos y pies en Paysandú">
-  <meta property="og:description" content="Manicura, nail art y pedicuría spa. Tu momento, con café o té y chocolate de regalo.">
+  <meta property="og:description" content="Manicura y pedicura spa en Paysandú. No es solo un servicio, es tu momento.">
   <meta property="og:image" content="{{ B.url }}{{ url_for('static', filename='img/sheila-espacio.webp') }}">
   <meta property="og:url" content="{{ B.url }}">
   <meta property="og:type" content="website">
@@ -52,7 +52,7 @@
       <a href="{{ url_for('home') }}#servicios">Servicios</a>
       <a href="{{ url_for('home') }}#experiencia">Experiencia</a>
       <a href="{{ url_for('home') }}#trabajos">Trabajos</a>
-      <a href="{{ url_for('fidelidad') }}">Club Serena</a>
+      <a href="{{ url_for('fidelidad') }}">{{ LOYALTY.prefix }} Serena</a>
       <a href="{{ url_for('home') }}#giftcards">Giftcards</a>
     </nav>
     <a class="btn btn--small nav__cta" href="{{ B.calendly }}" target="_blank" rel="noopener">Reservar</a>
@@ -67,7 +67,7 @@
       <a href="{{ url_for('home') }}#servicios"><small>01</small>Servicios</a>
       <a href="{{ url_for('home') }}#experiencia"><small>02</small>La experiencia</a>
       <a href="{{ url_for('home') }}#trabajos"><small>03</small>Trabajos</a>
-      <a href="{{ url_for('fidelidad') }}"><small>04</small>Club Serena</a>
+      <a href="{{ url_for('fidelidad') }}"><small>04</small>{{ LOYALTY.prefix }} Serena</a>
       <a href="{{ url_for('home') }}#giftcards"><small>05</small>Giftcards</a>
       <a href="{{ url_for('home') }}#ubicacion"><small>06</small>Dónde estamos</a>
     </nav>
@@ -94,17 +94,10 @@
 
   {% block footer %}
   <footer class="footer">
-    <div class="footer__marquee" aria-hidden="true">
-      <div class="marquee__track">
-        {% for _ in range(2) %}
-        <span>Tu momento</span><i>✦</i><span class="brand">SERENA</span><i>✦</i><span>Manos &amp; pies</span><i>✦</i>
-        {% endfor %}
-      </div>
-    </div>
     <div class="footer__grid">
       <div class="footer__brand">
         <img src="{{ url_for('static', filename='img/logo-linen.png') }}" alt="Serena Nails" width="72" height="65" loading="lazy">
-        <p>Manicura, nail art y pedicuría spa en Paysandú.<br>Un espacio pensado para que disfrutes tu tiempo.</p>
+        <p>Manicura y pedicura spa en Paysandú.<br>Un espacio pensado para que disfrutes tu tiempo.</p>
       </div>
       <div>
         <h3>Visitanos</h3>
@@ -120,7 +113,7 @@
       <div>
         <h3>Explorá</h3>
         <p><a href="{{ url_for('home') }}#servicios">Servicios y precios</a></p>
-        <p><a href="{{ url_for('fidelidad') }}">Club Serena</a></p>
+        <p><a href="{{ url_for('fidelidad') }}">{{ LOYALTY.prefix }} Serena</a></p>
         <p><a href="{{ url_for('home') }}#giftcards">Giftcards</a></p>
       </div>
     </div>
@@ -133,6 +126,9 @@
 
   {% block mobile_bar %}
   <div class="dock" data-dock>
+    <a class="dock__club" href="{{ url_for('fidelidad') }}" aria-label="{{ LOYALTY.prefix }} Serena">
+      <svg aria-hidden="true"><use href="#i-card"/></svg><span>{{ LOYALTY.prefix }}</span>
+    </a>
     <a class="dock__book" href="{{ B.calendly }}" target="_blank" rel="noopener">
       <svg aria-hidden="true"><use href="#i-calendar"/></svg> Reservar turno
     </a>

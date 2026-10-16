@@ -17,7 +17,7 @@
     <div class="admin__top">
       <div>
         <p class="eyebrow">Panel</p>
-        <h1 class="admin__title">Club <span class="brand">Serena</span></h1>
+        <h1 class="admin__title">{{ LOYALTY.prefix }} <span class="brand">Serena</span></h1>
       </div>
       <form method="post" action="{{ url_for('admin_logout') }}">
         <input type="hidden" name="csrf" value="{{ csrf_token() }}">
@@ -39,7 +39,7 @@
         <input type="hidden" name="csrf" value="{{ csrf_token() }}">
         <label>Nombre y apellido <input name="name" required autocomplete="off"></label>
         <label>Celular <input name="phone" type="tel" inputmode="tel" placeholder="09X XXX XXX" required autocomplete="off"></label>
-        <p class="admin-box__muted">La tarjeta arranca con {{ LOYALTY.welcome }} sellos de regalo.</p>
+        <p class="admin-box__muted">La tarjeta arranca con {{ LOYALTY.welcome }} sellos de bienvenida.</p>
         <button class="btn" type="submit">Crear tarjeta</button>
       </form>
     </details>

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Club Serena · Programa de fidelidad | Serena Nails{% endblock %}
-{% block description %}Club Serena: tu tarjeta digital de sellos. Arrancás con 2 sellos de regalo, 25% OFF en tu 5º servicio y 50% OFF en el 10º.{% endblock %}
+{% block title %}{{ LOYALTY.prefix }} Serena · Programa de fidelidad | Serena Nails{% endblock %}
+{% block description %}{{ LOYALTY.prefix }} Serena: tu tarjeta digital de sellos. Arrancás con 2 sellos, con 5 sellos tenés 25% OFF y con 10 sellos, 50% OFF.{% endblock %}
 {% block body_class %}page-club{% endblock %}
 
 {% block content %}
@@ -8,10 +8,10 @@
   <div class="container page-hero__grid">
     <div>
       <p class="eyebrow" data-reveal>Programa de fidelidad</p>
-      <h1 class="display page-hero__title club__title" data-split>Club <span class="brand">Serena</span></h1>
+      <h1 class="display page-hero__title club__title" data-split>{{ LOYALTY.prefix }} <span class="brand">Serena</span></h1>
       <p class="lead" data-reveal>Porque volver siempre tiene que valer la pena. Tu tarjeta digital de sellos vive en tu celular: sin cartoncitos que se pierden.</p>
       <div class="hero__ctas hero__ctas--left" data-reveal>
-        <a class="btn" href="https://wa.me/{{ B.whatsapp }}?text=Hola%20Sheila!%20Quiero%20sumarme%20al%20Club%20Serena." target="_blank" rel="noopener">
+        <a class="btn" href="https://wa.me/{{ B.whatsapp }}?text=Hola%20Sheila!%20Quiero%20sumarme%20al%20{{ LOYALTY.prefix | urlencode }}%20Serena." target="_blank" rel="noopener">
           <svg aria-hidden="true"><use href="#i-whatsapp"/></svg> Quiero sumarme
         </a>
         <a class="btn btn--outline" href="{{ B.calendly }}" target="_blank" rel="noopener">Reservar turno</a>
@@ -33,7 +33,7 @@
       <li>
         <span class="how__n">01</span>
         <h3>Te sumás</h3>
-        <p>En tu próxima visita, Sheila crea tu tarjeta y te la manda por WhatsApp. ¡Ya arranca con <strong>2 sellos de regalo</strong>!</p>
+        <p>En tu próxima visita, Sheila crea tu tarjeta y te la manda por WhatsApp. ¡Ya arranca con <strong>2 sellos de bienvenida</strong>!</p>
       </li>
       <li>
         <span class="how__n">02</span>
@@ -43,12 +43,12 @@
       <li>
         <span class="how__n">03</span>
         <h3>25% OFF</h3>
-        <p>Tu <strong>5º servicio</strong> tiene un 25% de descuento.</p>
+        <p>Cuando llegás a <strong>5 sellos</strong>, ese servicio tiene 25% de descuento.</p>
       </li>
       <li>
         <span class="how__n">04</span>
         <h3>50% OFF</h3>
-        <p>Tu <strong>10º servicio</strong> tiene un 50% de descuento, y empezás una tarjeta nueva.</p>
+        <p>Cuando llegás a <strong>10 sellos</strong>, ese servicio tiene 50% de descuento, y empezás una tarjeta nueva.</p>
       </li>
     </ol>
   </div>

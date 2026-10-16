@@ -312,7 +312,7 @@ def admin_create_client():
                     stamps=content.LOYALTY["welcome"])
     db.session.add(client)
     db.session.commit()
-    flash(f"Tarjeta creada para {client.first_name} con {client.stamps} sellos de regalo.", "ok")
+    flash(f"Tarjeta creada para {client.first_name} con {client.stamps} sellos de bienvenida.", "ok")
     return redirect(url_for("tarjeta", token=client.token))
 
 
@@ -388,7 +388,7 @@ def api_add_stamp():
     token = (data.get("token") or "").strip()
     client = Client.query.filter_by(token=token).first()
     if not client:
-        return jsonify(error="No encontré esa tarjeta. ¿Es un QR del Club Serena?"), 404
+        return jsonify(error="No encontré esa tarjeta. ¿Es un QR de una tarjeta de Serena?"), 404
     last = client.visits[0] if client.visits else None
     if last and not data.get("force"):
         created = last.created_at if last.created_at.tzinfo else last.created_at.replace(tzinfo=timezone.utc)

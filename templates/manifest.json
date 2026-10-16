@@ -1,7 +1,7 @@
 {% if request.args.get('app') == 'panel' %}{
-  "name": "Sellos · Club Serena",
+  "name": "Sellos · {{ LOYALTY.prefix }} Serena",
   "short_name": "Sellos Serena",
-  "description": "Escáner de tarjetas del Club Serena",
+  "description": "Escáner de tarjetas del {{ LOYALTY.prefix }} Serena",
   "start_url": "/admin/escanear",
   "scope": "/admin",
   "display": "standalone",
@@ -14,7 +14,7 @@
 }{% else %}{
   "name": "Serena Nails",
   "short_name": "Serena",
-  "description": "Manicura y pedicuría en Paysandú · Club Serena",
+  "description": "Manicura y pedicura spa en Paysandú",
   "start_url": {{ (request.referrer if request.referrer and '/tarjeta/' in request.referrer else '/') | tojson }},
   "scope": "/",
   "display": "standalone",
