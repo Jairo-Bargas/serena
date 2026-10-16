@@ -313,6 +313,38 @@ def admin():
     return render_template("admin/index.html", clients=clients, q=q, stats=stats)
 
 
+@app.route("/admin/exportar/<tipo>")
+@admin_required
+def admin_export(tipo):
+    """Descarga un CSV que abre directo en Excel (separador ; y tildes OK)."""
+    import csv
+    import io
+
+    buf = io.StringIO()
+    w = csv.writer(buf, delimiter=";")
+    total = content.LOYALTY["total"]
+    if tipo == "clientas":
+        w.writerow(["Nombre", "Celular", "Sellos actuales", f"Tarjetas completas ({total} sellos)",
+                     "Visitas totales", "Primera visita", "Última visita", "Cliente desde", "Notas"])
+        for c in Client.query.order_by(Client.name).all():
+            fechas = sorted(v.created_at for v in c.visits)
+            w.writerow([c.name, f"0{c.phone}", c.stamps, c.cards_completed, len(c.visits),
+                        format_fecha(fechas[0]) if fechas else "", format_fecha(fechas[-1]) if fechas else "",
+                        format_fecha(c.created_at), c.notes])
+    elif tipo == "visitas":
+        w.writerow(["Fecha", "Hora", "Clienta", "Celular", "Servicio", "N° de sello", "Descuento"])
+        for v in Visit.query.order_by(Visit.created_at.desc()).all():
+            local = v.created_at - timedelta(hours=3)  # hora de Uruguay
+            w.writerow([local.strftime("%d/%m/%Y"), local.strftime("%H:%M"), v.client.name, f"0{v.client.phone}",
+                        v.service, v.stamp_number, f"{v.discount}%" if v.discount else ""])
+    else:
+        abort(404)
+    fecha = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    return app.response_class(
+        "﻿" + buf.getvalue(), mimetype="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="serena-{tipo}-{fecha}.csv"'})
+
+
 @app.route("/admin/clientas", methods=["POST"])
 @admin_required
 def admin_create_client():

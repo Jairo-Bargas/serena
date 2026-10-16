@@ -67,6 +67,12 @@
       {% endfor %}
     </ul>
 
+    <div class="admin__export">
+      <p class="admin-box__muted">Descargar para Excel:</p>
+      <a class="btn btn--outline btn--small" href="{{ url_for('admin_export', tipo='clientas') }}">Clientas</a>
+      <a class="btn btn--outline btn--small" href="{{ url_for('admin_export', tipo='visitas') }}">Historial de visitas</a>
+    </div>
+
     <p class="admin-box__muted admin__tip">Tip: guardá el escáner en la pantalla de inicio de tu celular. Lo abrís, apuntás al QR de la clienta y el sello se suma solo.</p>
   </div>
 </section>

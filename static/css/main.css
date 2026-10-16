@@ -728,6 +728,8 @@ a.dock__club {
 .admin__dots i.r { outline: 1px solid var(--camel); outline-offset: 1px; }
 .admin__empty { text-align: center; padding: 30px; color: var(--muted); }
 .admin__tip { text-align: center; }
+.admin__export { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.admin__export p { width: 100%; text-align: center; }
 
 @media (min-width: 560px) {
   .admin__dots { display: flex; }
