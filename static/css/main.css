@@ -744,29 +744,6 @@ a.dock__club {
 .tag--over { background: #8c3b2e; color: #fff; border-color: #8c3b2e; }
 .tag--soon { background: var(--blush); color: var(--espresso); border-color: var(--camel); }
 .admin-box__expiry { display: grid; gap: 10px; }
-.booked { text-align: center; }
-.booked__check { width: 76px; height: 76px; margin: 0 auto; border-radius: 50%; background: var(--espresso); color: var(--linen); display: grid; place-items: center; font-size: 34px; animation: pop .7s cubic-bezier(.34, 1.7, .5, 1) both; box-shadow: 0 0 0 10px rgba(178, 150, 125, .22); }
-.booked__detail { background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 18px; text-align: left; }
-.booked__detail p { display: flex; justify-content: space-between; gap: 16px; margin: 0; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.booked__detail p:last-child { border-bottom: 0; }
-.booked__detail span { color: var(--muted); font-size: 14px; white-space: nowrap; }
-.booked__check svg { width: 34px; height: 34px; }
-.booked__detail strong { font-weight: 400; text-align: right; }
-.booked__pay { background: var(--espresso); color: var(--linen); border-radius: var(--radius); padding: 20px; text-align: left; }
-.booked__pay h2 { font-family: var(--f-display); font-weight: 400; font-size: 24px; margin: 0 0 6px; }
-.booked__note { margin: 0 0 12px; color: var(--khaki); font-size: 15px; }
-.booked__pay dl { margin: 0; display: grid; gap: 8px; }
-.booked__pay dl div { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(245, 241, 234, .14); padding-top: 8px; }
-.booked__pay dt { color: var(--khaki); font-size: 14px; }
-.booked__pay dd { margin: 0; display: flex; align-items: center; gap: 8px; text-align: right; }
-.booked__copy { border: 1px solid rgba(245, 241, 234, .4); background: none; color: var(--linen); border-radius: 999px; padding: 4px 10px 2px; font-size: 12px; }
-.booked__wa { width: 100%; background: #25D366; border-color: #25D366; color: #fff; }
-.booked__wa::before { background: #1ebe5a; }
-.booked__hint { margin: -8px 0 0; font-size: 13px; color: var(--muted); }
-.booked__club { display: flex; align-items: center; gap: 14px; text-align: left; text-decoration: none; background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
-.booked__club svg { font-size: 30px; color: var(--cocoa); flex-shrink: 0; }
-.booked__club strong { display: block; font-family: var(--f-display); font-weight: 400; font-size: 18px; }
-.booked__club span { font-size: 14px; color: var(--muted); line-height: 1.4; }
 .admin-box__alert--over { background: #f3e1dc; color: #8c3b2e; }
 .res__expired { width: 100%; padding: 12px 14px; border-radius: 14px; background: #f3e1dc; color: #8c3b2e; font-size: 15px; }
 .res__expired[hidden] { display: none; }

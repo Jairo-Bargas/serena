@@ -102,16 +102,6 @@ LOYALTY = {
     "valid_months": 8,    # vigencia de cada tarjeta desde que empieza
 }
 
-# Datos para transferir (se muestran después de reservar en Calendly, en /turno-confirmado).
-# Mientras "account" esté vacío, la página no muestra el bloque de transferencia.
-PAYMENT = {
-    "bank": "",          # p. ej. "BROU"
-    "account_type": "",  # p. ej. "Caja de ahorro en pesos"
-    "account": "",       # número de cuenta
-    "holder": "",        # titular
-    "note": "",          # p. ej. "Seña de $300 para confirmar el turno"
-}
-
 GALLERY = [
     {"src": "img/trabajo-1.webp", "sm": "img/trabajo-1-sm.webp", "alt": "Uñas blancas con diseño delicado"},
     {"src": "img/trabajo-2.webp", "sm": "img/trabajo-2-sm.webp", "alt": "Uñas nude con línea francesa fina"},
