@@ -13,5 +13,5 @@ __pycache__/
 Thumbs.db
 # entorno local
 .venv/
-serena.db
+serena.db*
 .claude/
