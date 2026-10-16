@@ -128,7 +128,6 @@
       });
       tabs.dataset.active = btn.dataset.tab;
       if (motion) ScrollTrigger.refresh();
-      countUp($$(`[data-panel="${btn.dataset.tab}"] [data-count]`));
     };
     buttons.forEach((b, idx) => {
       b.addEventListener("click", () => select(b));
@@ -154,22 +153,6 @@
     });
   }
 
-  /* ------------------------------------------------ precios: bajan hasta el valor real (900 arranca en 1.000) */
-  const money = (v) => "$" + Math.round(v).toLocaleString("es-UY");
-  const priceFrom = (end) => Math.ceil(end / 100) * 100 + 100;
-  if (motion) $$("[data-count]").forEach((el) => { el.textContent = money(priceFrom(+el.dataset.count)); });
-  function countUp(els) {
-    if (!motion) return;
-    els.forEach((el) => {
-      const end = +el.dataset.count;
-      const obj = { v: priceFrom(end) };
-      el.textContent = money(obj.v);
-      gsap.to(obj, {
-        v: end, duration: 1.8, delay: 0.35, ease: "power3.inOut",
-        onUpdate: () => { el.textContent = money(obj.v); },
-      });
-    });
-  }
 
   /* ------------------------------------------------ reel del espacio */
   const reel = $("[data-reel]");
@@ -359,9 +342,6 @@
     });
   });
 
-  // precios
-  const visiblePrices = $$(".service-list.is-active [data-count]");
-  if (visiblePrices.length) ScrollTrigger.create({ trigger: visiblePrices[0], start: "top 90%", once: true, onEnter: () => countUp(visiblePrices) });
 
   // galería: scroll horizontal fijado en desktop, barra de progreso en móvil
   const works = $("[data-works]");
