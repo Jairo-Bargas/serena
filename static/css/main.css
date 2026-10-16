@@ -652,6 +652,11 @@ a.dock__club {
 .card-status__big { font-family: var(--f-display); font-size: 26px; line-height: 1.25; margin: 0 0 14px; }
 .card-status__big strong { font-weight: 500; color: var(--cocoa); }
 .card-status__small { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+.card-expiry { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 14px 0 0; padding: 8px 14px 6px; border-radius: 999px; background: rgba(74, 52, 42, .07); font-size: 14px; color: var(--cocoa); }
+.card-expiry svg { font-size: 16px; }
+.card-expiry strong { font-weight: 600; }
+.card-expiry small { color: var(--muted); font-size: 12px; }
+.card-expiry--over { background: #f3e1dc; color: #8c3b2e; }
 .progress { height: 8px; border-radius: 99px; background: rgba(74, 52, 42, .12); overflow: hidden; }
 .progress span { display: block; height: 100%; width: var(--p); border-radius: inherit; background: linear-gradient(90deg, var(--camel), var(--cocoa)); animation: grow 1.6s var(--ease) both .5s; }
 @keyframes grow { from { width: 0; } }

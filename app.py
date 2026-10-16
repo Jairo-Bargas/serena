@@ -56,6 +56,18 @@ def utcnow():
     return datetime.now(timezone.utc)
 
 
+def aware(dt):
+    """SQLite devuelve fechas sin zona horaria: las tratamos como UTC."""
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def add_months(dt, months):
+    import calendar
+    m = dt.month - 1 + months
+    year, month = dt.year + m // 12, m % 12 + 1
+    return dt.replace(year=year, month=month, day=min(dt.day, calendar.monthrange(year, month)[1]))
+
+
 # ---------------------------------------------------------------- modelos
 
 class Client(db.Model):
@@ -85,6 +97,32 @@ class Client(db.Model):
             if n > self.stamps:
                 return n, pct
         return None
+
+    @property
+    def card_started(self):
+        """Inicio de la tarjeta actual: el alta, o la visita que completó la tarjeta anterior."""
+        total = content.LOYALTY["total"]
+        done = [v.created_at for v in self.visits if v.stamp_number >= total]
+        return aware(max(done) if done else self.created_at)
+
+    @property
+    def card_expires(self):
+        return add_months(self.card_started, content.LOYALTY["valid_months"])
+
+    @property
+    def expiry_text(self):
+        """'te quedan 8 meses' / 'te quedan 12 días' / None si ya venció."""
+        now = utcnow()
+        exp = self.card_expires
+        if exp <= now:
+            return None
+        months = (exp.year - now.year) * 12 + (exp.month - now.month)
+        if add_months(now, months).date() > exp.date():
+            months -= 1
+        if months >= 1:
+            return f"te queda{'n' if months > 1 else ''} {months} mes{'es' if months > 1 else ''}"
+        days = max(1, (exp - now).days)
+        return f"te queda{'n' if days > 1 else ''} {days} día{'s' if days > 1 else ''}"
 
 
 class Visit(db.Model):

@@ -99,6 +99,7 @@ LOYALTY = {
     "total": 10,          # sellos por tarjeta
     "welcome": 2,         # sellos de bienvenida para clientas nuevas
     "rewards": {5: 25, 10: 50},  # n° de sello -> % de descuento en ese servicio
+    "valid_months": 8,    # vigencia de cada tarjeta desde que empieza
 }
 
 GALLERY = [

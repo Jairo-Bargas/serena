@@ -34,6 +34,12 @@
         </div>
         <p class="card-status__small">{{ client.stamps }} de {{ total }} sellos{% if client.cards_completed %} · {{ client.cards_completed }} tarjeta{{ 's' if client.cards_completed > 1 }} completada{{ 's' if client.cards_completed > 1 }}{% endif %}</p>
       {% endif %}
+      {% set exp = client.expiry_text %}
+      <p class="card-expiry{% if not exp %} card-expiry--over{% endif %}">
+        <svg aria-hidden="true"><use href="#i-calendar"/></svg>
+        {% if exp %}Vencimiento: <strong>{{ exp }}</strong> <small>(vence el {{ client.card_expires | fecha }})</small>
+        {% else %}Tu tarjeta venció el {{ client.card_expires | fecha }}{% endif %}
+      </p>
     </div>
 
     {% if is_admin %}
