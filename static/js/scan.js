@@ -71,11 +71,24 @@
       ? "¡Completó la tarjeta! Arranca una nueva."
       : left === 1 ? `¡En su próxima visita tiene ${c.next_reward.pct}% OFF!`
       : left ? `Le faltan ${left} para el ${c.next_reward.pct}% OFF.` : "";
-    $("chips").addEventListener("click", async (e) => {
+    // ojo: guardar las referencias antes de openSheet (después el fragmento queda vacío)
+    const chips = $("chips");
+    const label = f.querySelector(".res__label");
+    chips.addEventListener("click", async (e) => {
       const b = e.target.closest("[data-service]");
-      if (!b) return;
-      $("chips").querySelectorAll(".chip-s").forEach((x) => x.classList.toggle("is-on", x === b));
-      try { await post(visitApi(c.visit.id), { service: b.dataset.service }); } catch (_) {}
+      if (!b || chips.dataset.saving) return;
+      chips.dataset.saving = "1";
+      chips.querySelectorAll(".chip-s").forEach((x) => x.classList.toggle("is-on", x === b));
+      navigator.vibrate?.(30);
+      try {
+        const { json } = await post(visitApi(c.visit.id), { service: b.dataset.service });
+        if (!json.ok) throw new Error();
+        label.innerHTML = `<span class="res__saved">✓ Guardado: ${b.dataset.service}</span>`;
+        setTimeout(closeSheet, 1100);  // vuelve sola al escáner
+      } catch (_) {
+        delete chips.dataset.saving;
+        label.textContent = "No se pudo guardar el servicio. Tocá de nuevo.";
+      }
     });
     openSheet(f);
   };

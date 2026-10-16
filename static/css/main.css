@@ -772,7 +772,10 @@ a.dock__club {
 .scan__manual { text-align: center; color: var(--camel); font-size: 14px; }
 
 .sheet { position: fixed; inset: 0; z-index: 120; display: flex; align-items: flex-end; background: rgba(28, 19, 15, 0); transition: background .35s; }
+.sheet[hidden] { display: none; }  /* sin esto, la capa invisible tapaba la flecha y la cámara */
 .sheet.is-open { background: rgba(28, 19, 15, .6); }
+.res__saved { display: inline-block; padding: 8px 14px 6px; border-radius: 999px; background: #e3efe2; color: #2f5d34; letter-spacing: .06em; text-transform: none; font-size: 15px; animation: pop .5s cubic-bezier(.34, 1.7, .5, 1) both; }
+.chip-s.is-on { transform: scale(1.06); box-shadow: 0 6px 14px -6px rgba(74, 52, 42, .6); }
 .sheet__body { width: 100%; max-width: 520px; margin: 0 auto; background: var(--cream); color: var(--espresso); border-radius: 30px 30px 0 0; padding: 26px 20px calc(24px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform .5s var(--ease); max-height: 92svh; overflow: auto; }
 .sheet.is-open .sheet__body { transform: none; }
 .res { display: grid; justify-items: center; text-align: center; gap: 10px; position: relative; }
