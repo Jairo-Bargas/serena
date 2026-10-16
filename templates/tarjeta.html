@@ -48,6 +48,22 @@
         <strong>Panel de Sheila</strong>
         <a href="{{ url_for('admin') }}">← Todas las clientas</a>
       </div>
+      {% if client.is_expired or client.expires_soon %}
+      <div class="admin-box__expiry">
+        {% if client.is_expired %}<p class="admin-box__alert admin-box__alert--over">⚠ Esta tarjeta venció el {{ client.card_expires | fecha }}.</p>
+        {% else %}<p class="admin-box__alert">Esta tarjeta vence el {{ client.card_expires | fecha }}.</p>{% endif %}
+        <div class="admin-box__row">
+          <form method="post" action="{{ url_for('admin_extend_card', client_id=client.id) }}">
+            <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+            <button class="btn btn--small" type="submit">Extender 1 mes</button>
+          </form>
+          <form method="post" action="{{ url_for('admin_reset_card', client_id=client.id) }}" onsubmit="return confirm('¿Reiniciar la tarjeta? Vuelve a 0 sellos y arranca un nuevo plazo de {{ LOYALTY.valid_months }} meses.')">
+            <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+            <button class="btn btn--outline btn--small" type="submit">Reiniciar tarjeta</button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
       {% set coming = LOYALTY.rewards.get(client.stamps + 1) %}
       <form method="post" action="{{ url_for('admin_add_stamp', client_id=client.id) }}" class="admin-box__stamp">
         <input type="hidden" name="csrf" value="{{ csrf_token() }}">

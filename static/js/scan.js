@@ -58,6 +58,11 @@
       if (n === c.visit.stamp) li.className = "on new";
       dots.append(li);
     }
+    if (c.expired) {
+      const x = $("expired");
+      x.hidden = false;
+      x.textContent = `⚠ Su tarjeta venció el ${c.expires}. Desde "Ver tarjeta" podés extenderla 1 mes o reiniciarla.`;
+    }
     if (c.visit.discount) {
       const r = $("reward");
       r.hidden = false;

@@ -31,6 +31,22 @@
       <div><strong>{{ stats.rewards_soon }}</strong><span>con descuento en la próxima</span></div>
     </div>
 
+    {% if stats.expired or stats.expiring %}
+    <div class="admin__alerts">
+      {% if stats.expired %}
+      <a class="alert alert--over{% if filtro == 'vencidas' %} is-on{% endif %}" href="{{ url_for('admin', filtro='vencidas') }}">
+        <strong>{{ stats.expired }}</strong> tarjeta{{ 's' if stats.expired > 1 }} vencida{{ 's' if stats.expired > 1 }} <span>Ver →</span>
+      </a>
+      {% endif %}
+      {% if stats.expiring %}
+      <a class="alert alert--soon{% if filtro == 'por-vencer' %} is-on{% endif %}" href="{{ url_for('admin', filtro='por-vencer') }}">
+        <strong>{{ stats.expiring }}</strong> vence{{ 'n' if stats.expiring > 1 }} este mes <span>Ver →</span>
+      </a>
+      {% endif %}
+      {% if filtro %}<a class="alert alert--clear" href="{{ url_for('admin') }}">Ver todas las clientas</a>{% endif %}
+    </div>
+    {% endif %}
+
     <a class="btn admin__scan" href="{{ url_for('admin_scan') }}"><svg aria-hidden="true"><use href="#i-qr"/></svg> Escanear tarjeta y sumar sello</a>
 
     <details class="admin__new" {% if not stats.clients %}open{% endif %}>
@@ -59,7 +75,9 @@
           <span class="admin__dots" aria-label="{{ c.stamps }} de {{ LOYALTY.total }} sellos">
             {% for n in range(1, LOYALTY.total + 1) %}<i class="{% if n <= c.stamps %}on{% endif %}{% if LOYALTY.rewards.get(n) %} r{% endif %}"></i>{% endfor %}
           </span>
-          {% if coming %}<span class="tag tag--solid">Próx. {{ coming }}%</span>{% endif %}
+          {% if c.is_expired %}<span class="tag tag--over">Vencida</span>
+          {% elif c.expires_soon %}<span class="tag tag--soon">Vence pronto</span>
+          {% elif coming %}<span class="tag tag--solid">Próx. {{ coming }}%</span>{% endif %}
         </a>
       </li>
       {% else %}

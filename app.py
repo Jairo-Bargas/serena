@@ -78,6 +78,8 @@ class Client(db.Model):
     stamps = db.Column(db.Integer, nullable=False, default=0)
     cards_completed = db.Column(db.Integer, nullable=False, default=0)
     notes = db.Column(db.String(500), nullable=False, default="")
+    card_started_at = db.Column(db.DateTime(timezone=True))   # se fija al reiniciar la tarjeta
+    expires_override = db.Column(db.DateTime(timezone=True))  # vencimiento extendido a mano
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
     visits = db.relationship("Visit", backref="client", cascade="all, delete-orphan",
                              order_by="Visit.id.desc()")
@@ -100,14 +102,27 @@ class Client(db.Model):
 
     @property
     def card_started(self):
-        """Inicio de la tarjeta actual: el alta, o la visita que completó la tarjeta anterior."""
+        """Inicio de la tarjeta actual: el alta, un reinicio, o la visita que completó la anterior."""
         total = content.LOYALTY["total"]
-        done = [v.created_at for v in self.visits if v.stamp_number >= total]
-        return aware(max(done) if done else self.created_at)
+        dates = [v.created_at for v in self.visits if v.stamp_number >= total]
+        dates += [self.created_at] + ([self.card_started_at] if self.card_started_at else [])
+        return max(aware(d) for d in dates)
 
     @property
     def card_expires(self):
-        return add_months(self.card_started, content.LOYALTY["valid_months"])
+        exp = add_months(self.card_started, content.LOYALTY["valid_months"])
+        if self.expires_override:
+            exp = max(exp, aware(self.expires_override))
+        return exp
+
+    @property
+    def is_expired(self):
+        return self.card_expires <= utcnow()
+
+    @property
+    def expires_soon(self):
+        """Le queda un mes o menos (y todavía no venció)."""
+        return not self.is_expired and self.card_expires - utcnow() <= timedelta(days=30)
 
     @property
     def expiry_text(self):
@@ -136,6 +151,13 @@ class Visit(db.Model):
 
 with app.app_context():
     db.create_all()
+    # columnas agregadas después de la primera versión (create_all no las suma a tablas existentes)
+    from sqlalchemy import inspect, text
+    _cols = {c["name"] for c in inspect(db.engine).get_columns("client")}
+    for _name in ("card_started_at", "expires_override"):
+        if _name not in _cols:
+            with db.engine.begin() as _conn:
+                _conn.execute(text(f"ALTER TABLE client ADD COLUMN {_name} TIMESTAMP"))
 
 
 # ---------------------------------------------------------------- lógica de fidelización
@@ -348,7 +370,15 @@ def admin():
         ).count(),
         "rewards_soon": Client.query.filter(Client.stamps.in_([n - 1 for n in content.LOYALTY["rewards"]])).count(),
     }
-    return render_template("admin/index.html", clients=clients, q=q, stats=stats)
+    everyone = Client.query.order_by(Client.name).all()
+    expired = [c for c in everyone if c.is_expired]
+    expiring = [c for c in everyone if c.expires_soon]
+    if request.args.get("filtro") == "vencidas":
+        clients = expired
+    elif request.args.get("filtro") == "por-vencer":
+        clients = expiring
+    stats["expired"], stats["expiring"] = len(expired), len(expiring)
+    return render_template("admin/index.html", clients=clients, q=q, stats=stats, filtro=request.args.get("filtro"))
 
 
 @app.route("/admin/exportar/<tipo>")
@@ -363,12 +393,14 @@ def admin_export(tipo):
     total = content.LOYALTY["total"]
     if tipo == "clientas":
         w.writerow(["Nombre", "Celular", "Sellos actuales", f"Tarjetas completas ({total} sellos)",
-                     "Visitas totales", "Primera visita", "Última visita", "Cliente desde", "Notas"])
+                     "Visitas totales", "Primera visita", "Última visita", "Cliente desde", "Vence la tarjeta",
+                     "Estado", "Notas"])
         for c in Client.query.order_by(Client.name).all():
             fechas = sorted(v.created_at for v in c.visits)
             w.writerow([c.name, f"0{c.phone}", c.stamps, c.cards_completed, len(c.visits),
                         format_fecha(fechas[0]) if fechas else "", format_fecha(fechas[-1]) if fechas else "",
-                        format_fecha(c.created_at), c.notes])
+                        format_fecha(c.created_at), format_fecha(c.card_expires),
+                        "Vencida" if c.is_expired else ("Vence pronto" if c.expires_soon else "Vigente"), c.notes])
     elif tipo == "visitas":
         w.writerow(["Fecha", "Hora", "Clienta", "Celular", "Servicio", "N° de sello", "Descuento"])
         for v in Visit.query.order_by(Visit.created_at.desc()).all():
@@ -435,6 +467,29 @@ def admin_edit_client(client_id):
     return redirect(url_for("tarjeta", token=client.token))
 
 
+@app.route("/admin/clientas/<int:client_id>/reiniciar", methods=["POST"])
+@admin_required
+def admin_reset_card(client_id):
+    client = db.get_or_404(Client, client_id)
+    client.stamps = 0
+    client.card_started_at = utcnow()
+    client.expires_override = None
+    db.session.commit()
+    flash(f"Tarjeta de {client.first_name} reiniciada: 0 sellos y {content.LOYALTY['valid_months']} meses de vigencia.", "ok")
+    return redirect(url_for("tarjeta", token=client.token))
+
+
+@app.route("/admin/clientas/<int:client_id>/extender", methods=["POST"])
+@admin_required
+def admin_extend_card(client_id):
+    client = db.get_or_404(Client, client_id)
+    base = max(client.card_expires, utcnow())  # si ya venció, el mes cuenta desde hoy
+    client.expires_override = add_months(base, 1)
+    db.session.commit()
+    flash(f"Tarjeta extendida hasta el {format_fecha(client.card_expires)}.", "ok")
+    return redirect(url_for("tarjeta", token=client.token))
+
+
 @app.route("/admin/clientas/<int:client_id>/eliminar", methods=["POST"])
 @admin_required
 def admin_delete_client(client_id):
@@ -459,6 +514,8 @@ def client_json(client, visit=None):
         "visit": {"id": visit.id, "stamp": visit.stamp_number, "discount": visit.discount,
                   "service": visit.service} if visit else None,
         "card_url": url_for("tarjeta", token=client.token),
+        "expired": client.is_expired,
+        "expires": format_fecha(client.card_expires),
     }
 
 
