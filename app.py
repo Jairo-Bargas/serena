@@ -264,10 +264,11 @@ def _send(app_obj, sub_rows, payload):
         pem, _ = vapid_keys()
         vapid = Vapid.from_pem(pem.encode())
         dead = []
-        for sub_id, endpoint, p256dh, auth in sub_rows:
+        for sub_id, endpoint, p256dh, auth, card_url in sub_rows:
+            data = dict(payload, url=payload["url"] or card_url)  # sin url fija: abre la tarjeta de esa clienta
             try:
                 webpush({"endpoint": endpoint, "keys": {"p256dh": p256dh, "auth": auth}},
-                        json.dumps(payload), vapid_private_key=vapid,
+                        json.dumps(data), vapid_private_key=vapid,
                         vapid_claims={"sub": f"mailto:{content.BUSINESS['email']}"}, ttl=60 * 60 * 24)
             except WebPushException as e:
                 if e.response is not None and e.response.status_code in (404, 410):
@@ -281,13 +282,14 @@ def _send(app_obj, sub_rows, payload):
             db.session.commit()
 
 
-def send_push(client_ids, title, body, url="/"):
-    """Envía un aviso a los celulares de esas clientas, en segundo plano. Devuelve cuántos celulares."""
+def send_push(client_ids, title, body, url=None):
+    """Envía un aviso a los celulares de esas clientas, en segundo plano. Devuelve cuántos celulares.
+    Si no se pasa url, al tocar el aviso cada clienta abre su propia tarjeta."""
     import threading
     q = PushSub.query
     if client_ids is not None:
         q = q.filter(PushSub.client_id.in_(list(client_ids)))
-    rows = [(s.id, s.endpoint, s.p256dh, s.auth) for s in q.all()]
+    rows = [(s.id, s.endpoint, s.p256dh, s.auth, f"/tarjeta/{s.client.token}") for s in q.all()]
     if rows:
         payload = {"title": title, "body": body, "url": url}
         threading.Thread(target=_send, args=(app, rows, payload), daemon=True).start()
@@ -573,7 +575,7 @@ def admin_broadcast():
     if not body:
         flash("Escribí el mensaje del aviso.", "error")
         return redirect(url_for("admin"))
-    n = send_push(None, title, body, url_for("home"))
+    n = send_push(None, title, body)
     flash(f"Aviso enviado a {n} celular{'es' if n != 1 else ''}." if n else "Todavía ninguna clienta activó los avisos.", "ok" if n else "info")
     return redirect(url_for("admin"))
 
