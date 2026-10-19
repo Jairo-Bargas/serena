@@ -85,6 +85,16 @@
       {% endfor %}
     </ul>
 
+    <details class="admin__new admin__push">
+      <summary><svg aria-hidden="true"><use href="#i-bell"/></svg> Enviar aviso a tus clientas <small>({{ stats.push }} con avisos activados)</small></summary>
+      <form method="post" action="{{ url_for('admin_broadcast') }}" onsubmit="return confirm('¿Enviar este aviso a todas las clientas con avisos activados?')">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+        <label>Título <input name="title" maxlength="60" placeholder="Serena Nails" autocomplete="off"></label>
+        <label>Mensaje <textarea name="body" rows="3" maxlength="180" required placeholder="Ej.: Esta semana hay turnos libres el jueves a la tarde 💅"></textarea></label>
+        <button class="btn" type="submit">Enviar aviso</button>
+      </form>
+    </details>
+
     <div class="admin__export">
       <p class="admin-box__muted">Descargar para Excel:</p>
       <a class="btn btn--outline btn--small" href="{{ url_for('admin_export', tipo='clientas') }}">Clientas</a>

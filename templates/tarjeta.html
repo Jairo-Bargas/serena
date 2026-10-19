@@ -108,6 +108,15 @@
       </div>
     </div>
 
+    <div class="push-box" data-push data-key="{{ vapid_public }}" data-url="{{ url_for('tarjeta_avisos', token=client.token) }}" data-csrf="{{ csrf_token() }}" hidden>
+      <svg aria-hidden="true"><use href="#i-bell"/></svg>
+      <div>
+        <strong data-push-title>Avisos de tu tarjeta</strong>
+        <p data-push-text>Enterate cuando sumás un sello, cuando te toca descuento y antes de que venza.</p>
+      </div>
+      <button type="button" class="btn btn--small" data-push-btn>Activar avisos</button>
+    </div>
+
     <div class="card-actions">
       <button type="button" class="btn btn--outline" data-share="{{ card_url }}" data-share-title="Mi tarjeta {{ LOYALTY.prefix }} Serena">
         <svg aria-hidden="true"><use href="#i-share"/></svg> <span>Guardar / compartir link</span>
@@ -151,6 +160,44 @@
     new QRCode(el, { text: el.dataset.qr, width: 132, height: 132, colorDark: "#4A342A", colorLight: "#FBF8F3", correctLevel: QRCode.CorrectLevel.M });
     el.removeAttribute("title");
   });
+
+  // Avisos (Web Push). En iPhone solo funciona desde la tarjeta agregada a la pantalla de inicio.
+  (() => {
+    const box = document.querySelector("[data-push]");
+    if (!box) return;
+    const title = box.querySelector("[data-push-title]"), text = box.querySelector("[data-push-text]"), btn = box.querySelector("[data-push-btn]");
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    const supported = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    const done = () => { title.textContent = "✓ Avisos activados"; text.textContent = "Te vamos a avisar de tus sellos, descuentos y vencimiento."; btn.hidden = true; box.classList.add("is-on"); };
+    if (ios && !standalone) {
+      box.hidden = false; btn.hidden = true;
+      text.innerHTML = "Para recibir avisos en iPhone, agregá esta tarjeta a tu pantalla de inicio (<strong>Compartir → Agregar a inicio</strong>) y abrila desde ese ícono.";
+      return;
+    }
+    if (!supported) return;
+    box.hidden = false;
+    const b64 = (s) => { const p = "=".repeat((4 - (s.length % 4)) % 4); const r = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from([...r].map((c) => c.charCodeAt(0))); };
+    const save = (sub) => fetch(box.dataset.url, { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF": box.dataset.csrf }, body: JSON.stringify(sub) });
+    const subscribe = async () => {
+      const reg = await navigator.serviceWorker.register("/sw.js");
+      await navigator.serviceWorker.ready;
+      const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(box.dataset.key) });
+      const r = await save(sub);
+      if (!r.ok) throw new Error();
+      done();
+    };
+    if (Notification.permission === "granted") subscribe().catch(() => {});
+    if (Notification.permission === "denied") { text.textContent = "Bloqueaste los avisos para esta página. Podés activarlos desde los ajustes del celular."; btn.hidden = true; }
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm !== "granted") { text.textContent = "No se activaron los avisos. Podés intentarlo de nuevo cuando quieras."; btn.disabled = false; return; }
+        await subscribe();
+      } catch (_) { text.textContent = "No se pudieron activar los avisos. Probá de nuevo."; btn.disabled = false; }
+    });
+  })();
 
   // Tarjeta en vivo: cuando Sheila escanea el QR, la tarjeta de la clienta lo festeja sola.
   (() => {

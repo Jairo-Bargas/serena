@@ -34,6 +34,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 em, i { font-style: normal; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: var(--nav-h); overflow-x: clip; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
@@ -666,6 +667,14 @@ a.dock__club {
 .card-qr strong { font-family: var(--f-display); font-size: 22px; font-weight: 500; }
 .card-qr p { margin: 4px 0 0; font-size: 15px; color: var(--muted); line-height: 1.4; }
 .card-actions { display: grid; gap: 10px; }
+.push-box { display: grid; grid-template-columns: auto 1fr; gap: 10px 14px; align-items: center; background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; text-align: left; }
+.push-box > svg { font-size: 26px; color: var(--cocoa); }
+.push-box strong { font-family: var(--f-display); font-weight: 400; font-size: 18px; }
+.push-box p { margin: 2px 0 0; font-size: 14px; color: var(--muted); line-height: 1.45; }
+.push-box .btn { grid-column: 1 / -1; }
+.push-box.is-on { background: #eef5ec; border-color: #cfe3cb; }
+.push-box.is-on > svg { color: #2f5d34; }
+.admin__push summary small { text-transform: none; letter-spacing: 0; color: var(--muted); }
 .card-install { background: var(--cream); border-radius: var(--radius); padding: 16px 20px; border: 1px solid var(--line); font-size: 15px; }
 .card-install summary { cursor: pointer; }
 .card-install p { margin: 10px 0 0; color: var(--muted); }

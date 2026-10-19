@@ -149,6 +149,31 @@ class Visit(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
 
 
+class PushSub(db.Model):
+    """Un celular de una clienta que aceptó recibir avisos."""
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey("client.id"), nullable=False, index=True)
+    endpoint = db.Column(db.String(600), unique=True, nullable=False)
+    p256dh = db.Column(db.String(200), nullable=False)
+    auth = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    client = db.relationship("Client", backref=db.backref("push_subs", cascade="all, delete-orphan"))
+
+
+class Notice(db.Model):
+    """Avisos automáticos ya enviados (para no repetirlos)."""
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey("client.id", ondelete="CASCADE"), nullable=False, index=True)
+    kind = db.Column(db.String(60), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    client = db.relationship("Client", backref=db.backref("notices", cascade="all, delete-orphan"))
+
+
+class Setting(db.Model):
+    key = db.Column(db.String(50), primary_key=True)
+    value = db.Column(db.Text, nullable=False)
+
+
 with app.app_context():
     db.create_all()
     # columnas agregadas después de la primera versión (create_all no las suma a tablas existentes)
@@ -184,6 +209,7 @@ def register_visit(client, service):
         client.stamps = n
     db.session.add(visit)
     db.session.commit()
+    notify_stamp(client, visit)
     return visit
 
 
@@ -197,6 +223,119 @@ def undo_last_visit(client):
     db.session.delete(last)
     db.session.commit()
     return True
+
+
+# ---------------------------------------------------------------- notificaciones push (web)
+
+def setting(key, default=None):
+    row = db.session.get(Setting, key)
+    return row.value if row else default
+
+
+def set_setting(key, value):
+    row = db.session.get(Setting, key) or Setting(key=key, value="")
+    row.value = value
+    db.session.add(row)
+    db.session.commit()
+
+
+def vapid_keys():
+    """Claves para firmar los avisos. Se generan solas la primera vez y quedan en la base."""
+    pem, pub = setting("vapid_private"), setting("vapid_public")
+    if not pem:
+        import base64
+        from cryptography.hazmat.primitives import serialization
+        from py_vapid import Vapid
+        v = Vapid()
+        v.generate_keys()
+        pem = v.private_pem().decode()
+        raw = v.public_key.public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+        pub = base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        set_setting("vapid_private", pem)
+        set_setting("vapid_public", pub)
+    return pem, pub
+
+
+def _send(app_obj, sub_rows, payload):
+    import json
+    from py_vapid import Vapid
+    from pywebpush import WebPushException, webpush
+    with app_obj.app_context():
+        pem, _ = vapid_keys()
+        vapid = Vapid.from_pem(pem.encode())
+        dead = []
+        for sub_id, endpoint, p256dh, auth in sub_rows:
+            try:
+                webpush({"endpoint": endpoint, "keys": {"p256dh": p256dh, "auth": auth}},
+                        json.dumps(payload), vapid_private_key=vapid,
+                        vapid_claims={"sub": f"mailto:{content.BUSINESS['email']}"}, ttl=60 * 60 * 24)
+            except WebPushException as e:
+                if e.response is not None and e.response.status_code in (404, 410):
+                    dead.append(sub_id)  # la clienta desinstaló o bloqueó los avisos
+                else:
+                    app_obj.logger.warning("push falló: %s", e)
+            except Exception as e:  # nunca romper el flujo de Sheila por un aviso
+                app_obj.logger.warning("push falló: %s", e)
+        if dead:
+            PushSub.query.filter(PushSub.id.in_(dead)).delete(synchronize_session=False)
+            db.session.commit()
+
+
+def send_push(client_ids, title, body, url="/"):
+    """Envía un aviso a los celulares de esas clientas, en segundo plano. Devuelve cuántos celulares."""
+    import threading
+    q = PushSub.query
+    if client_ids is not None:
+        q = q.filter(PushSub.client_id.in_(list(client_ids)))
+    rows = [(s.id, s.endpoint, s.p256dh, s.auth) for s in q.all()]
+    if rows:
+        payload = {"title": title, "body": body, "url": url}
+        threading.Thread(target=_send, args=(app, rows, payload), daemon=True).start()
+    return len(rows)
+
+
+def notify_stamp(client, visit):
+    if not client.push_subs:
+        return
+    total = content.LOYALTY["total"]
+    url = f"/tarjeta/{client.token}"
+    if visit.stamp_number >= total:
+        title, body = "¡Completaste tu tarjeta! 🎉", f"Hoy tuviste {visit.discount}% OFF. Ya empezás una tarjeta nueva."
+    elif visit.discount:
+        title, body = f"¡Sello {visit.stamp_number}! 🎉", f"Este servicio tiene {visit.discount}% OFF."
+    else:
+        title = "¡Sumaste un sello! 💅"
+        body = f"Llevás {visit.stamp_number} de {total}."
+        nxt = client.next_reward
+        if nxt:
+            left = nxt[0] - client.stamps
+            body += f" ¡Tu próximo servicio tiene {nxt[1]}% OFF!" if left == 1 else f" Te faltan {left} para tu {nxt[1]}% OFF."
+    send_push([client.id], title, body, url)
+
+
+def run_daily_notices(force=False):
+    """Avisos de vencimiento (7 días y 1 día antes). Corre como mucho cada 6 horas,
+    cuando Sheila usa el panel o el escáner. No hace falta ningún cron."""
+    last = setting("notices_last_run")
+    now = utcnow()
+    if not force and last and now - datetime.fromisoformat(last) < timedelta(hours=6):
+        return 0
+    set_setting("notices_last_run", now.isoformat())
+    sent = 0
+    for c in Client.query.join(PushSub).distinct().all():
+        if c.is_expired:
+            continue
+        days = (c.card_expires - now).days
+        for limit, text in ((1, "¡Tu tarjeta vence mañana!"), (7, "Tu tarjeta vence en una semana")):
+            if days < limit:
+                kind = f"vence{limit}:{c.card_expires.date().isoformat()}"
+                if not Notice.query.filter_by(client_id=c.id, kind=kind).first():
+                    db.session.add(Notice(client_id=c.id, kind=kind))
+                    db.session.commit()
+                    msg = f"Tenés {c.stamps} sellos. Reservá tu turno para no perderlos 💅"
+                    sent += send_push([c.id], text, msg, f"/tarjeta/{c.token}")
+                break
+    return sent
 
 
 # ---------------------------------------------------------------- helpers
@@ -294,6 +433,7 @@ def tarjeta(token):
     return render_template(
         "tarjeta.html",
         client=client,
+        vapid_public=vapid_keys()[1],
         services=content.LOYALTY_SERVICE_CHOICES,
         card_url=url_for("tarjeta", token=token, _external=True),
     )
@@ -308,6 +448,48 @@ def tarjeta_estado(token):
                    last_stamp=last.stamp_number if last else None, last_discount=last.discount if last else 0)
     resp.headers["Cache-Control"] = "no-store"
     return resp
+
+
+@app.route("/sw.js")
+def service_worker():
+    js = """
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'Serena Nails', {
+    body: d.body || '', icon: '/static/icons/icon-192.png', badge: '/static/icons/icon-192.png',
+    data: { url: d.url || '/' },
+  }));
+});
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = new URL(e.notification.data.url, self.location.origin).href;
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then((ws) => {
+    for (const w of ws) { if (w.url === url && 'focus' in w) return w.focus(); }
+    return clients.openWindow(url);
+  }));
+});
+"""
+    resp = app.response_class(js, mimetype="application/javascript")
+    resp.headers["Cache-Control"] = "no-cache"
+    return resp
+
+
+@app.route("/tarjeta/<token>/avisos", methods=["POST"])
+def tarjeta_avisos(token):
+    client = Client.query.filter_by(token=token).first_or_404()
+    data = request.get_json(silent=True) or {}
+    endpoint = (data.get("endpoint") or "")[:600]
+    keys = data.get("keys") or {}
+    if not endpoint.startswith("https://") or not keys.get("p256dh") or not keys.get("auth"):
+        return jsonify(error="Suscripción inválida"), 400
+    sub = PushSub.query.filter_by(endpoint=endpoint).first() or PushSub(endpoint=endpoint)
+    sub.client_id, sub.p256dh, sub.auth = client.id, keys["p256dh"][:200], keys["auth"][:100]
+    db.session.add(sub)
+    db.session.commit()
+    return jsonify(ok=True)
 
 
 @app.route("/manifest.webmanifest")
@@ -378,7 +560,22 @@ def admin():
     elif request.args.get("filtro") == "por-vencer":
         clients = expiring
     stats["expired"], stats["expiring"] = len(expired), len(expiring)
+    stats["push"] = db.session.query(PushSub.client_id).distinct().count()
+    run_daily_notices()
     return render_template("admin/index.html", clients=clients, q=q, stats=stats, filtro=request.args.get("filtro"))
+
+
+@app.route("/admin/avisos", methods=["POST"])
+@admin_required
+def admin_broadcast():
+    title = request.form.get("title", "").strip()[:60] or "Serena Nails"
+    body = request.form.get("body", "").strip()[:180]
+    if not body:
+        flash("Escribí el mensaje del aviso.", "error")
+        return redirect(url_for("admin"))
+    n = send_push(None, title, body, url_for("home"))
+    flash(f"Aviso enviado a {n} celular{'es' if n != 1 else ''}." if n else "Todavía ninguna clienta activó los avisos.", "ok" if n else "info")
+    return redirect(url_for("admin"))
 
 
 @app.route("/admin/exportar/<tipo>")
@@ -522,6 +719,7 @@ def client_json(client, visit=None):
 @app.route("/admin/escanear")
 @admin_required
 def admin_scan():
+    run_daily_notices()
     return render_template("admin/scan.html", services=content.LOYALTY_SERVICE_CHOICES)
 
 
