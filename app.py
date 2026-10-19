@@ -459,7 +459,7 @@ self.addEventListener('push', (e) => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data && e.data.text() }; }
   e.waitUntil(self.registration.showNotification(d.title || 'Serena Nails', {
-    body: d.body || '', icon: '/static/icons/icon-192.png', badge: '/static/icons/icon-192.png',
+    body: d.body || '', icon: '/static/icons/icon-192.png', badge: '/static/icons/badge-96.png',
     data: { url: d.url || '/' },
   }));
 });
