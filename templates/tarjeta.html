@@ -40,7 +40,7 @@
         {% if exp %}Vencimiento: <strong>{{ exp }}</strong> <small>(vence el {{ client.card_expires | fecha }})</small>
         {% else %}Tu tarjeta venció el {{ client.card_expires | fecha }}{% endif %}
       </p>
-      <p class="fine-print">* Los servicios de solo retiro no suman sello.</p>
+      <p class="fine-print">Las citas de retiro no suman sellos.</p>
     </div>
 
     {% if is_admin %}
