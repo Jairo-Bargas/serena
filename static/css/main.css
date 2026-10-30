@@ -652,6 +652,8 @@ a.dock__club {
 .card-status { text-align: center; }
 .card-status__big { font-family: var(--f-display); font-size: 26px; line-height: 1.25; margin: 0 0 14px; }
 .card-status__big strong { font-weight: 500; color: var(--cocoa); }
+.fine-print { font-size: 12px; color: var(--muted); margin: 14px 0 0; letter-spacing: .02em; }
+.fine-print--light { color: rgba(245, 241, 234, .6); margin: -20px 0 28px; }
 .card-status__small { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
 .card-expiry { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 14px 0 0; padding: 8px 14px 6px; border-radius: 999px; background: rgba(74, 52, 42, .07); font-size: 14px; color: var(--cocoa); }
 .card-expiry svg { font-size: 16px; }
